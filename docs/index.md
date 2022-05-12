@@ -47,11 +47,9 @@ CheckNextApp --> ProcessApp: if NextApp != ""
 CheckNextApp --> [*] : if NextApp == ""
 ProcessApp --> FetchChart
 FetchChart --> ExpandChart
-ExpandChart --> HelmGitCheckIn
-HelmGitCheckIn --> KptRepo
-KptRepo --> KptCustomize
-KptCustomize --> kptGitCheckIn
-kptGitCheckIn --> ProcessNextApp
+ExpandChart --> Customize
+Customize --> GitCheckIn
+GitCheckIn --> ProcessNextApp
 ```
 
 ## Workflow Approach
