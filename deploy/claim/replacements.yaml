@@ -8,7 +8,6 @@ replacements:
       fieldPath: spec.parameters.shape
     targets:
       - select:
-          name: rdspostgresql
           kind: RDSInstance
         fieldPaths:
           - spec.forProvider.dbInstanceClass
@@ -19,7 +18,6 @@ replacements:
       fieldPath: spec.parameters.minStorageGB
     targets:
       - select:
-          name: rdspostgresql
           kind: RDSInstance
         fieldPaths:
           - spec.forProvider.allocatedStorage
@@ -30,7 +28,6 @@ replacements:
       fieldPath: spec.writeConnectionSecretToRef.name
     targets:
       - select:
-          name: rdspostgresql
           kind: RDSInstance
         fieldPaths:
           - spec.writeConnectionSecretToRef.name
@@ -41,7 +38,6 @@ replacements:
       fieldPath: metadata.namespace
     targets:
       - select:
-          name: rdspostgresql
           kind: RDSInstance
         fieldPaths:
           - spec.writeConnectionSecretToRef.namespace
