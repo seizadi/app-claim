@@ -1,0 +1,53 @@
+apiVersion: fn.kpt.dev/v1alpha1
+kind: ApplyReplacements
+metadata:
+  name: replacements-fn-config
+replacements:
+  - source:
+      kind: PostgresInstance
+      name: RELEASE-NAME-cmdb
+      fieldPath: spec.parameters.shape
+    targets:
+      - select:
+          name: rdspostgresql
+          kind: RDSInstance
+        fieldPaths:
+          - spec.forProvider.dbInstanceClass
+        options:
+          create: true
+  - source:
+      kind: PostgresInstance
+      name: RELEASE-NAME-cmdb
+      fieldPath: spec.parameters.minStorageGB
+    targets:
+      - select:
+          name: rdspostgresql
+          kind: RDSInstance
+        fieldPaths:
+          - spec.forProvider.allocatedStorage
+        options:
+          create: true
+  - source:
+      kind: PostgresInstance
+      name: RELEASE-NAME-cmdb
+      fieldPath: spec.writeConnectionSecretToRef.name
+    targets:
+      - select:
+          name: rdspostgresql
+          kind: RDSInstance
+        fieldPaths:
+          - spec.writeConnectionSecretToRef.name
+        options:
+          create: true
+  - source:
+      kind: PostgresInstance
+      name: RELEASE-NAME-cmdb
+      fieldPath: metadata.namespace
+    targets:
+      - select:
+          name: rdspostgresql
+          kind: RDSInstance
+        fieldPaths:
+          - spec.writeConnectionSecretToRef.namespace
+        options:
+          create: true

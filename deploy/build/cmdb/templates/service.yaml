@@ -1,0 +1,24 @@
+# Source: cmdb/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: RELEASE-NAME-cmdb
+  namespace: default
+  labels:
+    helm.sh/chart: cmdb-0.3.0
+    app.kubernetes.io/name: cmdb
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/version: "seizadi-dev-4d95422-unsupported"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9090
+      protocol: TCP
+      name: grpc
+    - port: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: cmdb
+    app.kubernetes.io/instance: RELEASE-NAME

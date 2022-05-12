@@ -1,0 +1,10 @@
+# create-setters-fn-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: create-setters-fn-config
+  namespace: default
+data:
+  replicas: 10 # kpt-set: ${replicas}
+  env: |
+    - dev

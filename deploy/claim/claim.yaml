@@ -1,0 +1,11 @@
+apiVersion: database.example.org/v1alpha1
+kind: PostgresInstance
+metadata:
+  name: RELEASE-NAME-cmdb
+  namespace: default
+spec:
+  parameters:
+    shape: db.t2.small
+    minStorageGB: 20
+  writeConnectionSecretToRef:
+    name: RELEASE-NAME-cmdb-postgres-con

@@ -1,0 +1,6 @@
+# Source: cmdb/templates/ns.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cmdb
+  namespace: default

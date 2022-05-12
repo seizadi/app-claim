@@ -1,0 +1,23 @@
+# Source: cmdb/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: RELEASE-NAME-cmdb
+  namespace: default
+  labels:
+    helm.sh/chart: cmdb-0.3.0
+    app.kubernetes.io/name: cmdb
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/version: "seizadi-dev-4d95422-unsupported"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /cmdb
+            pathType: Prefix
+            backend:
+              service:
+                name: RELEASE-NAME-cmdb
+                port:
+                  number: 8080

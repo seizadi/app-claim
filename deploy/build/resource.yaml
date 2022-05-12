@@ -1,0 +1,11 @@
+# resources.yaml
+apiVersion: v1
+kind: MyKind
+metadata:
+  name: foo
+  namespace: default
+spec:
+  replicas: 4
+environments: # kpt-set: ${env}
+  - dev
+  - stage

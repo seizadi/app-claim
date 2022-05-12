@@ -1,0 +1,10 @@
+# Source: cmdb/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: RELEASE-NAME-cmdb
+  namespace: default
+  labels:
+    app: cmdb
+data:
+  CMDB_DATABASE_NAME: cmdb

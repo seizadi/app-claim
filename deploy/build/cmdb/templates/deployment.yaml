@@ -1,0 +1,93 @@
+# Source: cmdb/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: RELEASE-NAME-cmdb
+  namespace: default
+  labels:
+    helm.sh/chart: cmdb-0.3.0
+    app.kubernetes.io/name: cmdb
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/version: "seizadi-dev-4d95422-unsupported"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cmdb
+      app.kubernetes.io/instance: RELEASE-NAME
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: cmdb
+        app.kubernetes.io/instance: RELEASE-NAME
+    spec:
+      serviceAccountName: RELEASE-NAME-cmdb
+      securityContext: {}
+      initContainers:
+        - name: init-database
+          image: busybox
+          command: ['sh', '-c', 'until nslookup RELEASE-NAME-postgresql; do echo waiting for cmdb database; sleep 10; done;']
+      containers:
+        - name: cmdb
+          securityContext: {}
+          image: "soheileizadi/cmdb-server:seizadi-dev-4d95422-unsupported"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: "CMDB_LOGGING_LEVEL"
+              value: error
+            - name: CMDB_DATABASE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: RELEASE-NAME-cmdb
+                  key: CMDB_DATABASE_NAME
+            - name: CMDB_DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: RELEASE-NAME-postgres-con
+                  key: username
+            - name: CMDB_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: RELEASE-NAME-postgres-con
+                  key: password
+            - name: CMDB_DATABASE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: RELEASE-NAME-postgres-con
+                  key: endpoint
+            - name: CMDB_DATABASE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: RELEASE-NAME-postgres-con
+                  key: port
+            - name: CMDB_DATABASE_SSL
+              value: disable
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+            - containerPort: 8081
+              protocol: TCP
+            - containerPort: 9090
+              name: grpc
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8081
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 10
+          resources: {}
