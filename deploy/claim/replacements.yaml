@@ -5,7 +5,6 @@ metadata:
 replacements:
   - source:
       kind: PostgresInstance
-      name: RELEASE-NAME-cmdb
       fieldPath: spec.parameters.shape
     targets:
       - select:
@@ -17,7 +16,6 @@ replacements:
           create: true
   - source:
       kind: PostgresInstance
-      name: RELEASE-NAME-cmdb
       fieldPath: spec.parameters.minStorageGB
     targets:
       - select:
@@ -29,7 +27,6 @@ replacements:
           create: true
   - source:
       kind: PostgresInstance
-      name: RELEASE-NAME-cmdb
       fieldPath: spec.writeConnectionSecretToRef.name
     targets:
       - select:
@@ -41,7 +38,6 @@ replacements:
           create: true
   - source:
       kind: PostgresInstance
-      name: RELEASE-NAME-cmdb
       fieldPath: metadata.namespace
     targets:
       - select:

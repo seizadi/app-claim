@@ -2,8 +2,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: RELEASE-NAME-cmdb
-  namespace: default
+  name: cmdb-dev-seizadi
+  namespace: cmdb
   labels:
     app: cmdb
 data:

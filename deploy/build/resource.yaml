@@ -2,8 +2,8 @@
 apiVersion: v1
 kind: MyKind
 metadata:
-  name: foo
-  namespace: default
+  name: cmdb-dev-seizadi
+  namespace: cmdb
 spec:
   replicas: 4
 environments: # kpt-set: ${env}

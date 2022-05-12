@@ -2,8 +2,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: RELEASE-NAME-cmdb
-  namespace: default
+  name: cmdb-dev-seizadi
+  namespace: cmdb
   labels:
     helm.sh/chart: cmdb-0.3.0
     app.kubernetes.io/name: cmdb

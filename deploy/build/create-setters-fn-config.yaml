@@ -2,8 +2,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: create-setters-fn-config
-  namespace: default
+  name: cmdb-dev-seizadi
+  namespace: cmdb
 data:
   replicas: 10 # kpt-set: ${replicas}
   env: |

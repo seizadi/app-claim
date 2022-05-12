@@ -3,8 +3,8 @@ apiVersion: database.example.org/v1alpha1
 kind: PostgresInstance
 metadata:
   # Composite resources are cluster scoped, so there's no need for a namespace.
-  name: RELEASE-NAME-cmdb
-  namespace: default
+  name: cmdb-dev-seizadi
+  namespace: cmdb
 spec:
   # The schema of the spec.parameters object is defined by the earlier example
   # of an CompositeResourceDefinition. The location, storageGB, and version fields
