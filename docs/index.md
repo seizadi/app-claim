@@ -238,3 +238,17 @@ index e705744..ad2dce9 100644
      name: default
 ```
 
+This shows simple mutations but there might be cases where you need to implement
+conditional logic or more complex mutations rather than replace/substitutions.
+For example see the more complex operations available to
+[crossplane compositions](https://github.com/crossplane/crossplane/blob/master/design/design-doc-composition.md#transform-functions) to transform claims.
+
+In these cases in the case of kpt we have [starlark scripting](https://catalog.kpt.dev/starlark/v0.4/).
+[starlark](https://docs.bazel.build/versions/main/skylark/language.html) 
+is is a dialect of Python. It is commonly used as a configuration language. 
+It is an untyped dynamic language with high-level data types, first-class functions with lexical scope, 
+and garbage collection. You can find the spec for the Starlark language 
+[here](https://github.com/bazelbuild/starlark/blob/master/spec.md). 
+You can also find its API reference [here](https://docs.bazel.build/versions/main/skylark/lib/skylark-overview.html).
+
+We will do a example of claim transformation using this method as well.
