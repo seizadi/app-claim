@@ -10,16 +10,16 @@ spec:
       - name: seizadi-bloxinabox-rds-sg
     dbSubnetGroupNameRef:
       name: seizadi-bloxinabox-rds-subnetgroup
-    dbInstanceClass: <shape goes here>
+    dbInstanceClass: db.t2.small
     masterUsername: masteruser
-    allocatedStorage: <minStorageGB goes here>
+    allocatedStorage: 20
     engine: postgres
     engineVersion: "12.8"
     skipFinalSnapshotBeforeDeletion: true
     publiclyAccessible: false
     # enableIAMDatabaseAuthentication: true
   writeConnectionSecretToRef:
-    namespace: <claim namespace goes here>
-    name: <writeConnectionSecretToRef goes here>
+    namespace: cmdb
+    name: RELEASE-NAME-cmdb-postgres-con
   providerConfigRef:
     name: default

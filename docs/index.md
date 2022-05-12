@@ -34,6 +34,26 @@ The two approaches we will make is to:
 - Use a workflow engine to process application defintion e.g. helm chart and use the application claim to create the create the resource
 - Custom program that understands applications and the environment consumes application helm charts and emits resolved mainfest that coverts claims to resources
 
+In general this the state flow in handling all the applications, in both approaches:
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#fffcbb', 'lineColor': '#ff0000', 'primaryBorderColor': '#ff0000'}}}%%
+stateDiagram-v2
+
+[*] --> ProcessDC
+ProcessDC --> ProcessNextApp
+ProcessNextApp --> CheckNextApp
+state CheckNextApp <<choice>>
+CheckNextApp --> ProcessApp: if NextApp != ""
+CheckNextApp --> [*] : if NextApp == ""
+ProcessApp --> FetchChart
+FetchChart --> ExpandChart
+ExpandChart --> HelmGitCheckIn
+HelmGitCheckIn --> KptRepo
+KptRepo --> KptCustomize
+KptCustomize --> kptGitCheckIn
+kptGitCheckIn --> ProcessNextApp
+```
+
 ## Workflow Approach
 In the workflow approach we would pick a solution that has a decralative workflow engine, two open source solutions
 are good examples:
@@ -63,28 +83,7 @@ will be the source of our application defintion.
 I will focus on kpt and how it can be integrated, as I feel that the QUE language and 
 integration in kubevela is better understood at this time.
 
-kpt needs to have a resolved manifest for it to operate on so this is the flow
-in using it with our custome repo:
-
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#fffcbb', 'lineColor': '#ff0000', 'primaryBorderColor': '#ff0000'}}}%%
-stateDiagram-v2
-
-[*] --> ProcessDC
-ProcessDC --> ProcessNextApp
-ProcessNextApp --> CheckNextApp
-state CheckNextApp <<choice>>
-CheckNextApp --> ProcessApp: if NextApp != ""
-CheckNextApp --> [*] : if NextApp == ""
-ProcessApp --> FetchChart
-FetchChart --> ExpandChart
-ExpandChart --> HelmGitCheckIn
-HelmGitCheckIn --> KptRepo
-KptRepo --> KptCustomize
-KptCustomize --> kptGitCheckIn
-kptGitCheckIn --> ProcessNextApp
-```
-
+The kpt tool needs to have a resolved manifest for it to operate.
 We can step through the test CMDB repo, note with CMDB when built for local
 testing that postgres local server is run with the deployment, when run in the
 cloud it is run with a claim. To enable this we set
@@ -166,6 +165,19 @@ or setting it release name:
 kpt fn eval --image gcr.io/kpt-fn/search-replace:v0.2.0 -- by-path='metadata.namespace' put-value='cmdb'
 kpt fn eval --image gcr.io/kpt-fn/search-replace:v0.2.0 -- by-path='metadata.name' put-value='cmdb-dev-seizadi'
 ```
+You should see changes like this:
+```bash
+diff --git a/deploy/build/cmdb/templates/configmap.yaml b/deploy/build/cmdb/templates/configmap.yaml
+index 3ad3e33..813bf80 100644
+--- a/deploy/build/cmdb/templates/configmap.yaml
++++ b/deploy/build/cmdb/templates/configmap.yaml
+@@ -3,7 +3,7 @@ apiVersion: v1
+ kind: ConfigMap
+ metadata:
+   name: RELEASE-NAME-cmdb
+-  namespace: default
++  namespace: cmdb
+```
 
 We try to do the claim mutation by using 
 [apply-replacements function](https://catalog.kpt.dev/apply-replacements/v0.1/) which uses the 
@@ -194,3 +206,37 @@ pipeline:
     - image: gcr.io/kpt-fn/apply-replacements:unstable
       configPath: replacements.yaml
 ```
+
+Now we can process the claim:
+```bash
+kpt fn render claim
+```
+Now we can check what changed in the infrastructure defintion was updated:
+```bash
+diff --git a/deploy/claim/infrastructure.yaml b/deploy/claim/infrastructure.yaml
+index e705744..ad2dce9 100644
+--- a/deploy/claim/infrastructure.yaml
++++ b/deploy/claim/infrastructure.yaml
+@@ -10,16 +10,16 @@ spec:
+       - name: seizadi-bloxinabox-rds-sg
+     dbSubnetGroupNameRef:
+       name: seizadi-bloxinabox-rds-subnetgroup
+-    dbInstanceClass: <shape goes here>
++    dbInstanceClass: db.t2.small
+     masterUsername: masteruser
+-    allocatedStorage: <minStorageGB goes here>
++    allocatedStorage: 20
+     engine: postgres
+     engineVersion: "12.8"
+     skipFinalSnapshotBeforeDeletion: true
+     publiclyAccessible: false
+     # enableIAMDatabaseAuthentication: true
+   writeConnectionSecretToRef:
+-    namespace: <claim namespace goes here>
+-    name: <writeConnectionSecretToRef goes here>
++    namespace: cmdb
++    name: RELEASE-NAME-cmdb-postgres-con
+   providerConfigRef:
+     name: default
+```
+
