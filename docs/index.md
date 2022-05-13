@@ -23,6 +23,16 @@ secret key rotation services.
 In this project we will research some other patterns, the goal is to find a common
 pattern(s) for application deployment.
 
+## Operators versus Declarative Configuration
+In the following analysis we will consider declarative configuration of infrastructure from
+claims. This type of deployment might not fit our use cases where resources are shared and
+there is need for reclaim policies enforced by operator pattern, or there is specialized
+processing of the infrastructure resources required e.g. health monitoring or backup.
+It is intersting that 
+[crossplane composition reclaim lifecycle was backed out recently](https://github.com/crossplane/crossplane-runtime/issues/179#issuecomment-671686000).
+We will examine this decision once we have found all our use cases that will require
+the claim pattern.
+
 ## Additional Patterns
 Generally infrastructure resources are injected into applications using configmap or secrets.
 In addition to the pattern highlighted above we will look at two other patterns that build on
