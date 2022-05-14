@@ -1,0 +1,142 @@
+# Default values for db-controller.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+secrets:
+  enabled: false
+
+image:
+  repository: soheileizadi/db-controller
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+metrics:
+  address: "0.0.0.0"
+  port: 8080
+
+healthProbe:
+  address: "0.0.0.0"
+  port: 8081
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "{{ .Values.metrics.port }}"
+
+podSecurityContext:
+  runAsUser: 10001
+  runAsGroup: 10001
+  fsGroup: 10001
+  # fsGroup: 2000
+
+securityContext:
+  readOnlyRootFilesystem: true
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 8443
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+terminationGracePeriodSeconds: 10
+
+# enable pod disruption budget in case replicaCount > 1
+pdb:
+  enabled: false
+  maxUnavailable: 25%
+
+# deploying postgres pod, useful in case deploy in minikube
+postgresql:
+  enabled: false
+
+zapLogger:
+  develMode: false
+  level: info
+
+controllerConfig:
+  config.yaml: |
+    authSource: secret
+    # if aws authorization is used iam role must be provided
+    #iamRole: rds-role
+    region: us-west-1
+    vpcSecurityGroupIDRefs: seizadi-bloxinabox-rds-sg
+    dbSubnetGroupNameRef: seizadi-bloxinabox-rds-subnetgroup
+    dynamicHostWaitTimeMin: 1
+    defaultShape: db.t2.small
+    defaultMinStorageGB: 20
+    defaultEngineVersion: 12.8
+    defaultMasterPort: 5432
+    defaultSslMode: require
+    defaultMasterUsername: root
+    defaultReclaimPolicy: retain
+    # For Production this should be false and if SnapShot is not taken it will not be deleted
+    defaultSkipFinalSnapshotBeforeDeletion: true
+    defaultPubliclyAccessible: false
+    defaultDeletionPolicy: delete
+    passwordConfig:
+      passwordComplexity: enabled
+      minPasswordLength: 15
+      passwordRotationPeriod: 60
+    sample-connection:
+      username: postgres
+      host: localhost
+      port: 5432
+      sslMode: disable
+      passwordSecretRef: postgres-postgresql
+      passwordSecretKey: postgresql-password
+    # host omitted, allocates database dynamically
+    dynamic-connection:
+      username: root
+      port: 5432
+      sslMode: require
+      passwordSecretRef: dynamic-connection-secret
+      shape: db.t2.small
+      minStorageGB: 20
+      engineVersion: 12.8
+      reclaimPolicy: delete
+    another.connection:
+      username: root
+      host: some.other.service
+      port: 5412
+      sslMode: require
+      passwordSecretRef: another-connection-secret

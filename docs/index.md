@@ -25,13 +25,19 @@ pattern(s) for application deployment.
 
 ## Operators versus Declarative Configuration
 In the following analysis we will consider declarative configuration of infrastructure from
-claims. This type of deployment might not fit our use cases where resources are shared and
-there is need for reclaim policies enforced by operator pattern, or there is specialized
+claims. This type of deployment might not fit some (or many) use cases where resources are shared 
+and there is a need for reclaim policies enforced by an Operator, or there is specialized
 processing of the infrastructure resources required e.g. health monitoring or backup.
 It is intersting that 
 [crossplane composition reclaim lifecycle was backed out recently](https://github.com/crossplane/crossplane-runtime/issues/179#issuecomment-671686000).
 We will examine this decision once we have found all our use cases that will require
 the claim pattern.
+
+In this project we will define CRDs for the claims that we will use in the declarative
+configuration. This will allow us to load them on the cluster and if necessary process them
+using an Operator. We will seed the project with the kubebuilder db-controller project
+scaffolding so we can use kubebuilder to build CRDs quickly but we will not implement any
+runtime logic in this proejct.
 
 ## Additional Patterns
 Generally infrastructure resources are injected into applications using configmap or secrets.
