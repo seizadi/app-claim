@@ -39,6 +39,21 @@ using an Operator. We will seed the project with the kubebuilder db-controller p
 scaffolding so we can use kubebuilder to build CRDs quickly but we will not implement any
 runtime logic in this proejct.
 
+We start by creating a claim for ObjectStore which we would map to AWS S3 resource for example:
+```bash
+kubebuilder create api --controller false --kind ObjectStoreClaim --version v1 --group persistance.atlas.infoblox.com
+make manifests
+```
+Get following error from kubebuilder:
+```bash
+2022/05/14 10:28:20 failed to create API: unable to inject the resource to "base.go.kubebuilder.io/v3": multiple groups are not allowed by default, to enable multi-group visit https://kubebuilder.io/migration/multi-group.html
+```
+Enable multigroup layout:
+```bash
+kubebuilder edit --multigroup true
+
+```
+
 ## Additional Patterns
 Generally infrastructure resources are injected into applications using configmap or secrets.
 In addition to the pattern highlighted above we will look at two other patterns that build on
