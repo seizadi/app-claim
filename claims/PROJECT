@@ -14,4 +14,13 @@ resources:
   kind: DatabaseClaim
   path: github.com/infobloxopen/db-controller/api/v1
   version: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: atlas.infoblox.com
+  group: objectstore.claims.atlas.infoblox.com
+  kind: ObjectStoreClaim
+  path: github.com/infobloxopen/db-controller/apis/objectstore.claims.atlas.infoblox.com/v1
+  version: v1
 version: "3"

@@ -1,0 +1,6 @@
+apiVersion: objectstore.claims.atlas.infoblox.com.atlas.infoblox.com/v1
+kind: ObjectStoreClaim
+metadata:
+  name: objectstoreclaim-sample
+spec:
+  # TODO(user): Add fields here

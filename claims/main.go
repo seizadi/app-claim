@@ -33,10 +33,16 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	persistancev1 "github.com/infobloxopen/db-controller/api/v1"
+	objectstoreclaimsatlasinfobloxcomv1 "github.com/infobloxopen/db-controller/apis/objectstore.claims.atlas.infoblox.com/v1"
 	"github.com/infobloxopen/db-controller/controllers"
+	objectstoreclaimsatlasinfobloxcomcontrollers "github.com/infobloxopen/db-controller/controllers/objectstore.claims.atlas.infoblox.com"
+
 	//+kubebuilder:scaffold:imports
+	objectstoreclaimsatlasinfobloxcomv1 "github.com/infobloxopen/db-controller/apis/objectstore.claims.atlas.infoblox.com/v1"
+	objectstoreclaimsatlasinfobloxcomcontrollers "github.com/infobloxopen/db-controller/controllers/objectstore.claims.atlas.infoblox.com"
 	"github.com/infobloxopen/db-controller/pkg/config"
 	"github.com/infobloxopen/db-controller/pkg/rdsauth"
+
 	// +kubebuilder:scaffold:imports
 	crossplanedbv1beta1 "github.com/crossplane/provider-aws/apis/database/v1beta1"
 )
@@ -50,6 +56,7 @@ func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
 	utilruntime.Must(persistancev1.AddToScheme(scheme))
+	utilruntime.Must(objectstoreclaimsatlasinfobloxcomv1.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
 
 	// Infrastructure provisioning using crossplane
@@ -104,6 +111,13 @@ func main() {
 		MasterAuth: rdsauth.NewMasterAuth(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "DatabaseClaim")
+		os.Exit(1)
+	}
+	if err = (&objectstoreclaimsatlasinfobloxcomcontrollers.ObjectStoreClaimReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "ObjectStoreClaim")
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder

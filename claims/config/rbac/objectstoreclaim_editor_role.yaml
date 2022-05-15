@@ -1,0 +1,24 @@
+# permissions for end users to edit objectstoreclaims.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: objectstoreclaim-editor-role
+rules:
+- apiGroups:
+  - objectstore.claims.atlas.infoblox.com.atlas.infoblox.com
+  resources:
+  - objectstoreclaims
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - objectstore.claims.atlas.infoblox.com.atlas.infoblox.com
+  resources:
+  - objectstoreclaims/status
+  verbs:
+  - get
