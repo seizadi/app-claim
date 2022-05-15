@@ -1,6 +1,7 @@
 domain: atlas.infoblox.com
 layout:
 - go.kubebuilder.io/v3
+multigroup: true
 projectName: db-controller
 repo: github.com/infobloxopen/db-controller
 resources:
