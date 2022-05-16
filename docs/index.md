@@ -39,19 +39,41 @@ using an Operator. We will seed the project with the kubebuilder db-controller p
 scaffolding so we can use kubebuilder to build CRDs quickly but we will not implement any
 runtime logic in this proejct.
 
-We start by creating a claim for ObjectStore which we would map to AWS S3 resource for example:
-```bash
-kubebuilder create api --controller false --kind ObjectStoreClaim --version v1 --group persistance.atlas.infoblox.com
-make manifests
-```
-Get following error from kubebuilder:
-```bash
-2022/05/14 10:28:20 failed to create API: unable to inject the resource to "base.go.kubebuilder.io/v3": multiple groups are not allowed by default, to enable multi-group visit https://kubebuilder.io/migration/multi-group.html
-```
-Enable multigroup layout:
+The db-controller was setup for a single resource and we enable the project for
+multigroup layout:
 ```bash
 kubebuilder edit --multigroup true
+```
+There is work to refactor the definition from /api to /apis directory but since this is PoC,
+I will not make these changes here.
 
+We want the claim data model to follow the following schema:
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#fffcbb', 'lineColor': '#ff0000', 'primaryBorderColor': '#ff0000'}}}%%
+graph LR
+
+A[[claims.atlas.infoblox.com]] --> B((ObjectStoreClaim))
+A --> C((DataBaseClaim))
+```
+
+We could have finer grained grouping:
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#fffcbb', 'lineColor': '#ff0000', 'primaryBorderColor': '#ff0000'}}}%%
+graph LR
+
+A[[claims.atlas.infoblox.com]] --> B[[persistence.claims.atlas.infoblox.com]]
+B --> C((ObjectStoreClaim))
+B --> D((DataBaseClaim))
+```
+For now we go with the coarse model, as most of the work is defining the leaf nodes.
+We can refactor to the finer grain model once we have a better idea of the different 
+claims needed for the applications.
+
+We start by creating a claim for ObjectStore which we would map to AWS S3 resource for example:
+```bash
+kubebuilder create api --controller false --kind ObjectStoreClaim --version v1 --group objectstore.claims.atlas.infoblox.com
+make update_crds
 ```
 
 ## Additional Patterns
@@ -284,4 +306,29 @@ You can also find its API reference [here](https://docs.bazel.build/versions/mai
 
 We will do a example of claim transformation using this method as well.
 
-POC GOES HERE!
+POC USING STARLARK SCRIPT GOES HERE!
+
+## Application Use Cases
+
+Lets look at some common use cases below
+
+### Container Args
+In this use case you have something like this:
+```yaml
+      containers:
+        - name: <some-container>
+        .....
+          args:
+            - --s3-region=<some region>
+            - --s3-bucket=<some bucket>
+            - --s3-folder=<some folder>
+        .....
+```
+There is also the associated secret and you can have this injected via Secrets, 
+use node IAM permission, kube2iam or IRSA.
+
+This declaration does not tell us if the S3 resource is shared by other applciations.
+If it is shared does not application need read only or read/write access to the resource.
+The application claim should also include these intents.
+
+
