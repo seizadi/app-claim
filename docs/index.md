@@ -331,4 +331,23 @@ This declaration does not tell us if the S3 resource is shared by other applciat
 If it is shared does not application need read only or read/write access to the resource.
 The application claim should also include these intents.
 
-
+The clients will use AWS SDK to access the object store, we have to test other cloud providers
+but they are suppose to be able to support the API calls with their own endpoints:
+```go
+import(
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+)
+...
+    awsConfig := &aws.Config{
+    Region:     aws.String(s3-region),
+    HTTPClient: &http.Client{Timeout: defaultHTTPTimeout},
+    Endpoint:   &config.Endpoint,
+    }
+    awsSession, _ := session.NewSession(awsConfig)
+    svc = s3.New(awsSession)
+    downloader = s3manager.NewDownloader(awsSession)
+...
+```
