@@ -437,3 +437,10 @@ You can run it like this:
 claims search --dir <path to k8 manifests> --stage dev --env env-4 --app some-app s3 rds amazonaws.com
 ```
 
+Here is a sample, showing how you can use the tool to determine that a claim for a
+resource is shared by two different environments:
+```bash
+❯ ./bin/claims search --dir /Users/seizadi/projects/src/github.com/seizadi/k8s.manifests some-resource.amazonaws.com
+some-resource.amazonaws.com [dev/env-4/some-app integration/env-2/another-app]
+```
+
