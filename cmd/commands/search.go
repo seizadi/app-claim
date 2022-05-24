@@ -13,6 +13,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var searchResults = map[string][]string{}
+
 // addSearch implements the search command
 var addSearch = &cobra.Command{
 	Use:   "search",
@@ -57,7 +59,7 @@ in it in YAML format.`,
 		}
 		
 		for _, s := range stages {
-			if s.IsDir() {
+			if s.IsDir() && !IsHiddenFile(s.Name()){
 				if len(stage) > 0 {
 					if stage == s.Name() {
 						stageFound = true
@@ -71,6 +73,10 @@ in it in YAML format.`,
 		
 		if len(stage) > 0 && !stageFound {
 			log.Printf("stage %s not found\n", stage)
+		}
+		
+		for k, v := range searchResults {
+			fmt.Printf("%s %v\n", k, v)
 		}
 	},
 }
@@ -93,7 +99,7 @@ func SearchEnv(dir string, stage string, env string, app string, args []string) 
 	}
 	
 	for _, e := range envs {
-		if e.IsDir() {
+		if e.IsDir() && !IsHiddenFile(e.Name()){
 			if len(env) > 0 {
 				if env == e.Name() {
 					envFound = true
@@ -141,7 +147,7 @@ func SearchManifest(dir string, stage string, env string, app string, args []str
 	
 	rootPath := dir + "/" + stage + "/" + env + "/"
 	for _, a := range apps {
-		if a.IsDir() {
+		if a.IsDir() && !IsHiddenFile(a.Name()){
 			out, err := GetManifest(rootPath + a.Name() + "/manifest.yaml")
 			if err != nil {
 				fmt.Printf("Got error %s\n", err.Error())
@@ -183,8 +189,14 @@ func SearchMatch(s string, stage string, env string, app string, args []string) 
 	for _, a := range args {
 		if strings.Contains(strings.ToLower(s), a) {
 			if len(s) < 128 {
-				fmt.Printf("%s/%s/%s %s %s\n", stage, env, app, a, s)
+				// fmt.Printf("%s/%s/%s %s %s\n", stage, env, app, a, s)
+				tag := fmt.Sprintf("%s/%s/%s", stage, env, app)
+				searchResults[s] = append(searchResults[s], tag)
 			}
 		}
 	}
+}
+
+func IsHiddenFile(filename string) bool {
+	return filename[0:1] == "."
 }
