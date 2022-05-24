@@ -178,9 +178,14 @@ func recurseSearch(m interface{}, stage string, env string, app string, args []s
 	case reflect.Map:
 		for _, key := range reflectM.MapKeys() {
 			strct := reflectM.MapIndex(key)
-			// Search Key for match
-			SearchMatch(fmt.Sprintf("%v", key.Interface()), stage, env, app, args)
-			recurseSearch(strct.Interface(), stage, env, app, args)
+			value := reflect.ValueOf(strct.Interface())
+			if value.Kind() == reflect.String {
+				recurseSearch(fmt.Sprintf("%v:%s", key.Interface(), value.String()), stage, env, app, args)
+			} else {
+				// Search Key for match
+				SearchMatch(fmt.Sprintf("%v", key.Interface()), stage, env, app, args)
+				recurseSearch(strct.Interface(), stage, env, app, args)
+			}
 		}
 	}
 }
