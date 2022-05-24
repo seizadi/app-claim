@@ -27,19 +27,12 @@ GO_TEST_FLAGS  ?= -v -cover
 build:
 	@go build -o ./bin/claims ./cmd/claims
 
-.PHONY: test
-test: fmt
-	@go test $(GO_TEST_FLAGS) $(GO_PACKAGES)
-
-.PHONY: test-with-integration
-test-with-integration: fmt
-	@go test $(GO_TEST_FLAGS) -tags=integration $(GO_PACKAGES)
-
 .PHONY: docker
 docker:
 	@docker build --build-arg api_version=$(API_VERSION) --build-arg srv_version=$(SRV_VERSION) -f $(SERVER_DOCKERFILE) -t $(SERVER_IMAGE):$(IMAGE_VERSION) .
 	@docker tag $(SERVER_IMAGE):$(IMAGE_VERSION) $(SERVER_IMAGE):latest
 	@docker image prune -f --filter label=stage=server-intermediate
+
 .PHONY: push
 push:
 	@docker push $(SERVER_IMAGE)
