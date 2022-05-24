@@ -149,41 +149,41 @@ func SearchManifest(dir string, stage string, env string, app string, args []str
 			}
 			
 			for _, m := range (*out) {
-				recurseSearch(m, a.Name(), args)
+				recurseSearch(m, stage, env, a.Name(), args)
 			}
 		}
 	}
 	return searchOut, nil
 }
 
-func recurseSearch(m interface{}, app string, args []string) {
+func recurseSearch(m interface{}, stage string, env string, app string, args []string) {
 	reflectM := reflect.ValueOf(m)
 	
 	switch reflectM.Kind() {
 	case reflect.String:
 		v := reflectM.String()
-		SearchMatch(v, app, args)
+		SearchMatch(v, stage, env, app, args)
 
 	case reflect.Slice:
 		for i := 0; i < reflectM.Len(); i++ {
-			recurseSearch(reflectM.Index(i), app, args)
+			recurseSearch(reflectM.Index(i), stage, env, app, args)
 		}
 		
 	case reflect.Map:
 		for _, key := range reflectM.MapKeys() {
 			strct := reflectM.MapIndex(key)
 			// Search Key for match
-			SearchMatch(fmt.Sprintf("%v", key.Interface()), app, args)
-			recurseSearch(strct.Interface(), app, args)
+			SearchMatch(fmt.Sprintf("%v", key.Interface()), stage, env, app, args)
+			recurseSearch(strct.Interface(), stage, env, app, args)
 		}
 	}
 }
 
-func SearchMatch(s string, app string, args []string) {
+func SearchMatch(s string, stage string, env string, app string, args []string) {
 	for _, a := range args {
 		if strings.Contains(strings.ToLower(s), a) {
 			if len(s) < 128 {
-				fmt.Printf("Match App: %s %s %s\n", app, a, s)
+				fmt.Printf("%s/%s/%s %s %s\n", stage, env, app, a, s)
 			}
 		}
 	}

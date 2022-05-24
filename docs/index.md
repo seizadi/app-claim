@@ -418,3 +418,22 @@ data:
 In these cases you need to have a declarative defintion of the signature for the
 persistence claims.
 
+There is a CLI tool to help research 
+[dc-repo]() configuration.
+
+Local configuration
+```bash
+make build
+./bin/claims --help
+```
+
+Docker run
+```bash
+docker run soheileizadi/claims --help
+```
+
+You can run it like this:
+```bash
+claims search --dir <path to k8 manifests> --stage dev --env env-4 --app some-app s3 rds amazonaws.com
+```
+
