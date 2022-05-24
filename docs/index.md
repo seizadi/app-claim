@@ -351,3 +351,70 @@ import(
     downloader = s3manager.NewDownloader(awsSession)
 ...
 ```
+The ConfigMap pattern is another one found in applications, you can refrence
+the open source solution [Teleport](https://github.com/gravitational/teleport)
+in how it pulls persistence information for its configuration:
+```yaml
+---
+# Source: teleport/templates/config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: teleport
+data:
+  teleport.yaml: |
+    teleport:
+      log:
+        output: stderr
+        severity: DEBUG
+      data_dir: /var/lib/teleport
+
+      auth_servers:
+      - teleport.ib-system.svc.cluster.local:3025
+      - auth-poseidon-preprod.csp.infoblox.com:3025
+
+      storage:
+        audit_events_uri:
+        - "dynamodb://<some-dynamodb>"
+        audit_sessions_uri: "s3://<some-bucket>"
+```
+
+Another example similarly for configuration of 
+[FOSSA](https://github.com/fossas)
+using ConfigMap:
+```yaml
+---
+# Source: fossa-core/templates/config/config-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fossa-config
+  namespace: fossa
+data:
+  config.json: |-
+    {
+      "db": {
+        "port": 5432,
+        "username": "root",
+        "database": "fossa",
+        "host": "<some aws rds host>",
+        "pool": {
+          "maxConnections": 5,
+          "minConnections": 1,
+          "maxIdleTime": 60000
+        }
+      },
+      "cache": {
+        "package": {
+          "engine": "s3",
+          "store_private": true,
+          "bucket": "<some-bucket>",
+          "s3Options": {
+            "endpoint": "s3.amazonaws.com"
+          }
+        }
+      },
+```
+In these cases you need to have a declarative defintion of the signature for the
+persistence claims.
+
