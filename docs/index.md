@@ -443,4 +443,32 @@ resource is shared by two different environments:
 ❯ ./bin/claims search --dir /Users/seizadi/projects/src/github.com/seizadi/k8s.manifests some-resource.amazonaws.com
 some-resource.amazonaws.com [dev/env-4/some-app integration/env-2/another-app]
 ```
+Try to visualize this data using graph DB:
+```bash
+docker run -p7474:7474 -p7687:7687 -e NEO4J_AUTH=neo4j/s3cr3t neo4j
+```
+
+A bit more advanced:
+```bash
+docker run \
+    --name testneo4j \
+    -p7474:7474 -p7687:7687 \
+    -d \
+    -v $HOME/neo4j/data:/data \
+    -v $HOME/neo4j/logs:/logs \
+    -v $HOME/neo4j/import:/var/lib/neo4j/import \
+    -v $HOME/neo4j/plugins:/plugins \
+    --env NEO4J_AUTH=neo4j/s3cr3t \
+    neo4j:latest
+```
+
+In case it is not clear why we are thinking about this as a graph
+problem. In particular for Neo4J, 
+we want to create a record, where each record will contain
+information on :App and :Resource nodes, and 
+the :ACCESS relationship. The :ACCESS relationship will
+have boolean .Props Read and Write to indicate access
+types. Both App and Resources
+would have name .Props. For Resources we would
+define .Props Type with values like (ObjectStore or Database). 
 

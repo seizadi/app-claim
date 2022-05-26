@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/mitchellh/go-homedir v1.1.0
+	github.com/neo4j/neo4j-go-driver/v4 v4.4.3
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.11.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
