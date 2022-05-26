@@ -51,9 +51,9 @@ func Discover(searchResults map[string][]string) error {
 					return err
 				}
 				
-				_, err = accessSvc.Save(graphdb.Access{Read: true}, r["resourceId"].(string), a["appId"].(string))
+				_, err = accessSvc.Save(graphdb.Access{Read: true}, a["appId"].(string), r["resourceId"].(string))
 				if err != nil {
-					return err
+					//return err
 				}
 			}
 		}
