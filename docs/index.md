@@ -472,3 +472,12 @@ types. Both App and Resources
 would have name .Props. For Resources we would
 define .Props Type with values like (ObjectStore or Database). 
 
+You can use this tool to populate the database and
+then using the graph query editor to visulaize the data
+```genericsql
+match(n:App)-[r:ACCESS]->(m:Resource) return n,r,m
+```
+Then to filter to only the dev stage:
+```genericsql
+match(n:App)-[r:ACCESS]->(m:Resource) where n.stage = "dev" return n,r,m
+```

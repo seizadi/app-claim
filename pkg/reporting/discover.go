@@ -43,15 +43,22 @@ func Discover(searchResults map[string][]string) error {
 				a, err := appSvc.FindOneByName(app)
 				// Check for record not being found
 				if domainError, ok := err.(*graphdb.DomainError); ok && domainError.StatusCode() == graphdb.NotFound {
-					// Create App
-					a, err = appSvc.Save(app)
+					// Create
+					s := strings.Split(app, "/")
+					appRecord := graphdb.App{
+						Name: app,
+						Stage: s[0],
+						Environment: s[1],
+						ShortName: s[2],
+					}
+					a, err = appSvc.Save(appRecord)
 				}
 				
 				if err != nil {
 					return err
 				}
 				
-				_, err = accessSvc.Save(graphdb.Access{Read: true}, a["appId"].(string), r["resourceId"].(string))
+				_, err = accessSvc.Save(graphdb.Access{Read: true}, a.AppId, r["resourceId"].(string))
 				if err != nil {
 					//return err
 				}
