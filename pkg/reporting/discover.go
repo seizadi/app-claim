@@ -3,21 +3,21 @@ package reporting
 import (
 	"fmt"
 	"strings"
-	
+
 	"github.com/seizadi/app-claim/pkg/graphdb"
 )
 
-func Discover(searchResults map[string][]string) error {
+func Discover(graphOptions string, searchResults map[string][]string) error {
 	// Initialize Driver and Services
-	driver, err := graphdb.NewDriver()
+	driver, err := graphdb.NewDriver(graphOptions)
 	if err != nil {
 		return err
 	}
-	
+
 	appSvc := graphdb.NewAppService(driver)
 	resourceSvc := graphdb.NewResourceService(driver)
 	accessSvc := graphdb.NewAccessService(driver)
-	
+
 	for resource, apps := range searchResults {
 		// For resource and apps create the nodes and access relationships
 		fmt.Printf("%s %v\n", resource, apps)
@@ -33,11 +33,11 @@ func Discover(searchResults map[string][]string) error {
 				// Create Resource
 				r, err = resourceSvc.Save(resourceName)
 			}
-			
+
 			if err != nil {
 				return err
 			}
-			
+
 			for _, app := range apps {
 				// Check if app is already created?
 				a, err := appSvc.FindOneByName(app)
@@ -46,18 +46,18 @@ func Discover(searchResults map[string][]string) error {
 					// Create
 					s := strings.Split(app, "/")
 					appRecord := graphdb.App{
-						Name: app,
-						Stage: s[0],
+						Name:        app,
+						Stage:       s[0],
 						Environment: s[1],
-						ShortName: s[2],
+						ShortName:   s[2],
 					}
 					a, err = appSvc.Save(appRecord)
 				}
-				
+
 				if err != nil {
 					return err
 				}
-				
+
 				_, err = accessSvc.Save(graphdb.Access{Read: true}, a.AppId, r["resourceId"].(string))
 				if err != nil {
 					//return err

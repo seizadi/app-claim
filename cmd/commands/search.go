@@ -3,17 +3,15 @@ package commands
 import (
 	"bytes"
 	"fmt"
+	"github.com/seizadi/app-claim/pkg/reporting"
 	"io/ioutil"
 	"log"
 	"reflect"
 	"strings"
-	
+
 	"gopkg.in/yaml.v3"
-	
-	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
+
 	"github.com/spf13/cobra"
-	
-	"github.com/seizadi/app-claim/pkg/reporting"
 )
 
 var searchResults = map[string][]string{}
@@ -26,20 +24,20 @@ var addSearch = &cobra.Command{
 It assumes that the directory supplied has the manifests
 in it in YAML format.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		
+
 		dir, err := cmd.Flags().GetString("dir")
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
-		
+
 		// If stage is specified search only selected
 		stage, err := cmd.Flags().GetString("stage")
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
-		
+
 		// If environment is specified search only selected
 		env, err := cmd.Flags().GetString("env")
 		if err != nil {
@@ -52,17 +50,24 @@ in it in YAML format.`,
 			fmt.Println(err)
 			return
 		}
-		
+
+		// Check if we should save results to graphdb
+		graphOptions, err := cmd.Flags().GetString("graphdb")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
 		stageFound := false
-		
+
 		stages, err := ioutil.ReadDir(dir)
 		if err != nil {
 			log.Print(err)
 			return
 		}
-		
+
 		for _, s := range stages {
-			if s.IsDir() && !IsHiddenFile(s.Name()){
+			if s.IsDir() && !IsHiddenFile(s.Name()) {
 				if len(stage) > 0 {
 					if stage == s.Name() {
 						stageFound = true
@@ -73,18 +78,18 @@ in it in YAML format.`,
 				}
 			}
 		}
-		
+
 		if len(stage) > 0 && !stageFound {
 			log.Printf("stage %s not found\n", stage)
 		}
-		
+
 		for k, v := range searchResults {
 			fmt.Printf("%s %v\n", k, v)
 		}
-		
-		//dbUri := "neo4j://localhost:7687"
-		//LoadGraph(dbUri, "neo4j", "s3cr3t")
-		reporting.Discover(searchResults)
+
+		if len(graphOptions) > 0 {
+			reporting.Discover(graphOptions, searchResults)
+		}
 	},
 }
 
@@ -94,6 +99,7 @@ func init() {
 	addSearch.Flags().StringP("stage", "s", "", "search stage")
 	addSearch.Flags().StringP("env", "e", "", "search environment")
 	addSearch.Flags().StringP("app", "a", "", "search application")
+	addSearch.Flags().StringP("graphdb", "g", "", "use graph database")
 }
 
 func SearchEnv(dir string, stage string, env string, app string, args []string) {
@@ -104,9 +110,9 @@ func SearchEnv(dir string, stage string, env string, app string, args []string) 
 		log.Print(err)
 		return
 	}
-	
+
 	for _, e := range envs {
-		if e.IsDir() && !IsHiddenFile(e.Name()){
+		if e.IsDir() && !IsHiddenFile(e.Name()) {
 			if len(env) > 0 {
 				if env == e.Name() {
 					envFound = true
@@ -117,7 +123,7 @@ func SearchEnv(dir string, stage string, env string, app string, args []string) 
 			}
 		}
 	}
-	
+
 	if len(env) > 0 && !envFound {
 		log.Printf("environment %s not found\n", env)
 	}
@@ -130,9 +136,9 @@ func GetManifest(filename string) (*[]map[interface{}]interface{}, error) {
 		log.Print(err)
 		return &out, err
 	}
-	
+
 	dec := yaml.NewDecoder(bytes.NewReader(source))
-	
+
 	for {
 		m := make(map[interface{}]interface{})
 		if dec.Decode(&m) != nil {
@@ -140,27 +146,27 @@ func GetManifest(filename string) (*[]map[interface{}]interface{}, error) {
 		}
 		out = append(out, m)
 	}
-	
+
 	return &out, err
 }
 
-func SearchManifest(dir string, stage string, env string, app string, args []string) ([]string, error){
+func SearchManifest(dir string, stage string, env string, app string, args []string) ([]string, error) {
 	var searchOut []string
 	apps, err := ioutil.ReadDir(dir + "/" + stage + "/" + env)
 	if err != nil {
 		log.Print(err)
 		return searchOut, err
 	}
-	
+
 	rootPath := dir + "/" + stage + "/" + env + "/"
 	for _, a := range apps {
-		if a.IsDir() && !IsHiddenFile(a.Name()){
+		if a.IsDir() && !IsHiddenFile(a.Name()) {
 			out, err := GetManifest(rootPath + a.Name() + "/manifest.yaml")
 			if err != nil {
 				fmt.Printf("Got error %s\n", err.Error())
 				return searchOut, err
 			}
-			
+
 			for _, m := range (*out) {
 				recurseSearch(m, stage, env, a.Name(), args)
 			}
@@ -171,7 +177,7 @@ func SearchManifest(dir string, stage string, env string, app string, args []str
 
 func recurseSearch(m interface{}, stage string, env string, app string, args []string) {
 	reflectM := reflect.ValueOf(m)
-	
+
 	switch reflectM.Kind() {
 	case reflect.String:
 		v := reflectM.String()
@@ -181,7 +187,7 @@ func recurseSearch(m interface{}, stage string, env string, app string, args []s
 		for i := 0; i < reflectM.Len(); i++ {
 			recurseSearch(reflectM.Index(i), stage, env, app, args)
 		}
-		
+
 	case reflect.Map:
 		for _, key := range reflectM.MapKeys() {
 			strct := reflectM.MapIndex(key)
@@ -211,35 +217,4 @@ func SearchMatch(s string, stage string, env string, app string, args []string) 
 
 func IsHiddenFile(filename string) bool {
 	return filename[0:1] == "."
-}
-
-func LoadGraph(uri, username, password string) (string, error) {
-	driver, err := neo4j.NewDriver(uri, neo4j.BasicAuth(username, password, ""))
-	if err != nil {
-		return "", err
-	}
-	defer driver.Close()
-	
-	session := driver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
-	defer session.Close()
-	
-	greeting, err := session.WriteTransaction(func(transaction neo4j.Transaction) (interface{}, error) {
-		result, err := transaction.Run(
-			"CREATE (a:Greeting) SET a.message = $message RETURN a.message + ', from node ' + id(a)",
-			map[string]interface{}{"message": "hello, world"})
-		if err != nil {
-			return nil, err
-		}
-		
-		if result.Next() {
-			return result.Record().Values[0], nil
-		}
-		
-		return nil, result.Err()
-	})
-	if err != nil {
-		return "", err
-	}
-	
-	return greeting.(string), nil
 }
