@@ -56,6 +56,7 @@ push:
 .PHONY: buildx
 buildx: ## Build and optionally push a multi-arch db-controller container image to the Docker registry
 	@docker buildx build --push \
+		--build-arg "BUILD_BASE_IMAGE=$(BUILD_BASE_IMAGE)" \
 		--build-arg "BUILD_GOPROXY=$(BUILD_GOPROXY)" \
 		--build-arg api_version=$(API_VERSION) \
 		--build-arg srv_version=$(SRV_VERSION) \
