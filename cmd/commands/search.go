@@ -2,20 +2,18 @@ package commands
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"github.com/seizadi/app-claim/pkg/reporting"
 	"io/ioutil"
 	"log"
 	"reflect"
 	"strings"
-	"errors"
 
 	"gopkg.in/yaml.v3"
 
 	"github.com/spf13/cobra"
 )
-
-var searchResults = map[string][]string{}
 
 // addSearch implements the search command
 var addSearch = &cobra.Command{
@@ -60,8 +58,12 @@ in it in YAML format.`,
 		}
 
 		// Search
-
-	SeachTokens(tokens, dir, stage, env, app string)
+		r := NewSearchRunner()
+		searchResults, err := r.SearchForTokens(args, dir, stage, env, app)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 
 		for k, v := range searchResults {
 			fmt.Printf("%s %v\n", k, v)
@@ -77,7 +79,18 @@ in it in YAML format.`,
 	},
 }
 
-func SearchForTokens(tokens []string, dir, stage, env, app string) ([]string, error) {
+// DatabaseClaimReconciler reconciles a DatabaseClaim object
+type SearchRunner struct {
+	SearchResults map[string][]string
+}
+
+func NewSearchRunner() *SearchRunner {
+	return &SearchRunner{
+		SearchResults: map[string][]string{},
+	}
+}
+
+func (r *SearchRunner) SearchForTokens(tokens []string, dir, stage, env, app string) (map[string][]string, error) {
 	stageFound := false
 
 	stages, err := ioutil.ReadDir(dir)
@@ -91,10 +104,10 @@ func SearchForTokens(tokens []string, dir, stage, env, app string) ([]string, er
 			if len(stage) > 0 {
 				if stage == s.Name() {
 					stageFound = true
-					SearchEnv(dir, stage, env, app, tokens)
+					r.SearchEnv(dir, stage, env, app, tokens)
 				}
 			} else {
-				SearchEnv(dir, s.Name(), env, app, tokens)
+				r.SearchEnv(dir, s.Name(), env, app, tokens)
 			}
 		}
 	}
@@ -103,7 +116,7 @@ func SearchForTokens(tokens []string, dir, stage, env, app string) ([]string, er
 		return nil, errors.New(fmt.Sprintf("stage %s not found\n", stage))
 	}
 
-	return
+	return r.SearchResults, nil
 }
 
 func init() {
@@ -113,10 +126,10 @@ func init() {
 	addSearch.Flags().StringP("env", "e", "", "search environment")
 	addSearch.Flags().StringP("app", "a", "", "search application")
 	addSearch.Flags().StringP("graphdb", "g", "", "use graph database")
-	addSearch.Flags().StringP("s3", "s3", "", "search for s3 buckets")
+	//addSearch.Flags().StringP("s3", "s3", "", "search for s3 buckets")
 }
 
-func SearchEnv(dir string, stage string, env string, app string, args []string) {
+func (r *SearchRunner) SearchEnv(dir string, stage string, env string, app string, args []string) {
 	envFound := false
 	path := dir + "/" + stage
 	envs, err := ioutil.ReadDir(path)
@@ -130,10 +143,10 @@ func SearchEnv(dir string, stage string, env string, app string, args []string) 
 			if len(env) > 0 {
 				if env == e.Name() {
 					envFound = true
-					SearchManifest(dir, stage, env, app, args)
+					r.SearchManifest(dir, stage, env, app, args)
 				}
 			} else {
-				SearchManifest(dir, stage, e.Name(), app, args)
+				r.SearchManifest(dir, stage, e.Name(), app, args)
 			}
 		}
 	}
@@ -164,7 +177,7 @@ func GetManifest(filename string) (*[]map[interface{}]interface{}, error) {
 	return &out, err
 }
 
-func SearchManifest(dir string, stage string, env string, app string, args []string) ([]string, error) {
+func (r *SearchRunner) SearchManifest(dir string, stage string, env string, app string, args []string) ([]string, error) {
 	var searchOut []string
 	apps, err := ioutil.ReadDir(dir + "/" + stage + "/" + env)
 	if err != nil {
@@ -182,24 +195,24 @@ func SearchManifest(dir string, stage string, env string, app string, args []str
 			}
 
 			for _, m := range *out {
-				recurseSearch(m, stage, env, a.Name(), args)
+				r.recurseSearch(m, stage, env, a.Name(), args)
 			}
 		}
 	}
 	return searchOut, nil
 }
 
-func recurseSearch(m interface{}, stage string, env string, app string, args []string) {
+func (r *SearchRunner) recurseSearch(m interface{}, stage string, env string, app string, args []string) {
 	reflectM := reflect.ValueOf(m)
 
 	switch reflectM.Kind() {
 	case reflect.String:
 		v := reflectM.String()
-		SearchMatch(v, stage, env, app, args)
+		r.SearchMatch(v, stage, env, app, args)
 
 	case reflect.Slice:
 		for i := 0; i < reflectM.Len(); i++ {
-			recurseSearch(reflectM.Index(i), stage, env, app, args)
+			r.recurseSearch(reflectM.Index(i), stage, env, app, args)
 		}
 
 	case reflect.Map:
@@ -207,23 +220,23 @@ func recurseSearch(m interface{}, stage string, env string, app string, args []s
 			strct := reflectM.MapIndex(key)
 			value := reflect.ValueOf(strct.Interface())
 			if value.Kind() == reflect.String {
-				recurseSearch(fmt.Sprintf("%v:%s", key.Interface(), value.String()), stage, env, app, args)
+				r.recurseSearch(fmt.Sprintf("%v:%s", key.Interface(), value.String()), stage, env, app, args)
 			} else {
 				// Search Key for match
-				SearchMatch(fmt.Sprintf("%v", key.Interface()), stage, env, app, args)
-				recurseSearch(strct.Interface(), stage, env, app, args)
+				r.SearchMatch(fmt.Sprintf("%v", key.Interface()), stage, env, app, args)
+				r.recurseSearch(strct.Interface(), stage, env, app, args)
 			}
 		}
 	}
 }
 
-func SearchMatch(s string, stage string, env string, app string, args []string) {
+func (r *SearchRunner) SearchMatch(s string, stage string, env string, app string, args []string) {
 	for _, a := range args {
 		if strings.Contains(strings.ToLower(s), a) {
 			if len(s) < 128 {
 				// fmt.Printf("%s/%s/%s %s %s\n", stage, env, app, a, s)
 				tag := fmt.Sprintf("%s/%s/%s", stage, env, app)
-				searchResults[s] = append(searchResults[s], tag)
+				r.SearchResults[s] = append(r.SearchResults[s], tag)
 			}
 		}
 	}
