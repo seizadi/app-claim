@@ -23,6 +23,6 @@ RUN CGO_ENABLED=0 \
 FROM alpine:latest AS runner
 
 WORKDIR /bin
-COPY --from=builder /go/src/github.com/seizadi/app-claim/bin/claims .
+COPY --from=build /go/src/github.com/seizadi/app-claim/bin/claims .
 
 ENTRYPOINT ["claims"]
