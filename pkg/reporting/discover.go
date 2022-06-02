@@ -1,7 +1,6 @@
 package reporting
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/seizadi/app-claim/pkg/graphdb"
@@ -20,7 +19,6 @@ func Discover(graphOptions string, searchResults map[string][]string) error {
 
 	for resource, apps := range searchResults {
 		// For resource and apps create the nodes and access relationships
-		fmt.Printf("%s %v\n", resource, apps)
 		// Extract Resource name
 		v := strings.Split(resource, ":")
 		// Ignore this resource if we can not find a name

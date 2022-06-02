@@ -23,6 +23,21 @@ GO_CACHE       := -pkgdir $(BUILD_PATH)/go-cache
 GO_BUILD_FLAGS ?= $(GO_CACHE) -i -v
 GO_TEST_FLAGS  ?= -v -cover
 
+# Docker buildx options
+# Platforms to build the multi-arch image for.
+IMAGE_PLATFORMS ?= linux/amd64,linux/arm64
+
+# Base build image to use.
+BUILD_BASE_IMAGE ?= golang:1.18.2
+
+# Enable build with CGO.
+BUILD_CGO_ENABLED ?= 0
+
+# Go module mirror to use.
+BUILD_GOPROXY ?= https://proxy.golang.org
+
+IMAGE_RESULT_FLAG = --output=type=oci,dest=$(shell pwd)/image/claims-$(VERSION).tar
+
 .PHONY: build
 build:
 	@go build -o ./bin/claims ./cmd/claims
@@ -36,6 +51,30 @@ docker:
 .PHONY: push
 push:
 	@docker push $(SERVER_IMAGE)
+
+#TODO
+.PHONY: buildx
+buildx: ## Build and optionally push a multi-arch db-controller container image to the Docker registry
+	@docker buildx build --push \
+		--build-arg api_version=$(API_VERSION) \
+		--build-arg srv_version=$(SRV_VERSION) \
+		-f $(SERVER_DOCKERFILE) \
+		-t $(SERVER_IMAGE):$(IMAGE_VERSION) \
+		-t $(SERVER_IMAGE):latest .
+
+#	@mkdir -p $(shell pwd)/image
+#	docker buildx build $(IMAGE_RESULT_FLAG) \
+#		--platform $(IMAGE_PLATFORMS) \
+#		--build-arg "BUILD_GOPROXY=$(BUILD_GOPROXY)" \
+#		--build-arg "BUILD_BASE_IMAGE=$(BUILD_BASE_IMAGE)" \
+#		--build-arg "BUILD_VERSION=$(BUILD_VERSION)" \
+#		--build-arg "BUILD_BRANCH=$(BUILD_BRANCH)" \
+#		--build-arg "BUILD_SHA=$(BUILD_SHA)" \
+#		--build-arg "BUILD_CGO_ENABLED=$(BUILD_CGO_ENABLED)" \
+#		--build-arg "BUILD_EXTRA_GO_LDFLAGS=$(BUILD_EXTRA_GO_LDFLAGS)" \
+#		$(DOCKER_BUILD_LABELS) \
+#		$(IMAGE_TAGS) \
+#		$(shell pwd)
 
 .PHONY: clean
 clean:

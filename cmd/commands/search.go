@@ -8,6 +8,7 @@ import (
 	"log"
 	"reflect"
 	"strings"
+	"errors"
 
 	"gopkg.in/yaml.v3"
 
@@ -58,39 +59,51 @@ in it in YAML format.`,
 			return
 		}
 
-		stageFound := false
+		// Search
 
-		stages, err := ioutil.ReadDir(dir)
-		if err != nil {
-			log.Print(err)
-			return
-		}
-
-		for _, s := range stages {
-			if s.IsDir() && !IsHiddenFile(s.Name()) {
-				if len(stage) > 0 {
-					if stage == s.Name() {
-						stageFound = true
-						SearchEnv(dir, stage, env, app, args)
-					}
-				} else {
-					SearchEnv(dir, s.Name(), env, app, args)
-				}
-			}
-		}
-
-		if len(stage) > 0 && !stageFound {
-			log.Printf("stage %s not found\n", stage)
-		}
+	SeachTokens(tokens, dir, stage, env, app string)
 
 		for k, v := range searchResults {
 			fmt.Printf("%s %v\n", k, v)
 		}
 
 		if len(graphOptions) > 0 {
-			reporting.Discover(graphOptions, searchResults)
+			err = reporting.Discover(graphOptions, searchResults)
+			if err != nil {
+				log.Print(err)
+				return
+			}
 		}
 	},
+}
+
+func SearchForTokens(tokens []string, dir, stage, env, app string) ([]string, error) {
+	stageFound := false
+
+	stages, err := ioutil.ReadDir(dir)
+	if err != nil {
+		log.Print(err)
+		return nil, err
+	}
+
+	for _, s := range stages {
+		if s.IsDir() && !IsHiddenFile(s.Name()) {
+			if len(stage) > 0 {
+				if stage == s.Name() {
+					stageFound = true
+					SearchEnv(dir, stage, env, app, tokens)
+				}
+			} else {
+				SearchEnv(dir, s.Name(), env, app, tokens)
+			}
+		}
+	}
+
+	if len(stage) > 0 && !stageFound {
+		return nil, errors.New(fmt.Sprintf("stage %s not found\n", stage))
+	}
+
+	return
 }
 
 func init() {
@@ -100,6 +113,7 @@ func init() {
 	addSearch.Flags().StringP("env", "e", "", "search environment")
 	addSearch.Flags().StringP("app", "a", "", "search application")
 	addSearch.Flags().StringP("graphdb", "g", "", "use graph database")
+	addSearch.Flags().StringP("s3", "s3", "", "search for s3 buckets")
 }
 
 func SearchEnv(dir string, stage string, env string, app string, args []string) {
@@ -167,7 +181,7 @@ func SearchManifest(dir string, stage string, env string, app string, args []str
 				return searchOut, err
 			}
 
-			for _, m := range (*out) {
+			for _, m := range *out {
 				recurseSearch(m, stage, env, a.Name(), args)
 			}
 		}
