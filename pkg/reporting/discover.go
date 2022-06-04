@@ -6,7 +6,7 @@ import (
 	"github.com/seizadi/app-claim/pkg/graphdb"
 )
 
-func Discover(graphOptions string, searchResults map[string][]string) error {
+func Discover(graphOptions string, searchResults map[string][]string, kind string) error {
 	// Initialize Driver and Services
 	driver, err := graphdb.NewDriver(graphOptions)
 	if err != nil {
@@ -29,7 +29,7 @@ func Discover(graphOptions string, searchResults map[string][]string) error {
 			// Check for record not being found
 			if domainError, ok := err.(*graphdb.DomainError); ok && domainError.StatusCode() == graphdb.NotFound {
 				// Create Resource
-				r, err = resourceSvc.Save(resourceName)
+				r, err = resourceSvc.Save(resourceName, kind)
 			}
 
 			if err != nil {

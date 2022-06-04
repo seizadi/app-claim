@@ -429,7 +429,7 @@ make build
 
 Docker run
 ```bash
-docker run soheileizadi/claims --help
+docker run ghcr.io/seizadi/claims --help
 ```
 
 You can run it like this:

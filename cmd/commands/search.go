@@ -1,13 +1,16 @@
 package commands
 
 import (
+	"bufio"
 	"bytes"
 	"errors"
 	"fmt"
 	"github.com/seizadi/app-claim/pkg/reporting"
 	"io/ioutil"
 	"log"
+	"os"
 	"reflect"
+	"regexp"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -57,23 +60,124 @@ in it in YAML format.`,
 			return
 		}
 
-		// Search
-		r := NewSearchRunner()
-		searchResults, err := r.SearchForTokens(args, dir, stage, env, app)
+		awsOptions, err := cmd.Flags().GetString("aws")
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 
-		for k, v := range searchResults {
-			fmt.Printf("%s %v\n", k, v)
-		}
+		// Search
+		// There are two types of search free form from list of args passed or AWS
+		// For AWS search we expect a file to passed as argument that contains the
+		// AWS S3 bucket names as search terms
+		r := NewSearchRunner("", "")
 
-		if len(graphOptions) > 0 {
-			err = reporting.Discover(graphOptions, searchResults)
+		if len(awsOptions) > 0 {
+			// Read the file with AWS Buckets
+			readFile, err := os.Open(awsOptions)
+
 			if err != nil {
-				log.Print(err)
+				fmt.Println(err)
 				return
+			}
+			fileScanner := bufio.NewScanner(readFile)
+
+			fileScanner.Split(bufio.ScanLines)
+
+			tokens := []string{}
+			for fileScanner.Scan() {
+				values := strings.Split(fileScanner.Text(), " ")
+				if len(values) == 3 {
+					tokens = append(tokens, values[2])
+				}
+			}
+
+			readFile.Close()
+
+			searchResults, err := r.SearchForTokens(tokens, dir, stage, env, app)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			for k, v := range searchResults {
+				fmt.Printf("%s %v\n", k, v)
+			}
+
+			if len(graphOptions) > 0 {
+				err = reporting.Discover(graphOptions, searchResults, "s3")
+				if err != nil {
+					log.Print(err)
+					return
+				}
+			}
+
+			// Now search by amazonaws.com and identify other resources like RDS, DynamoDB and ElasticSearch
+			searchResults, err = r.SearchForTokens([]string{"amazonaws.com"}, dir, stage, env, app)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			// Patterns:
+			// RDS: *.rds.amazonaws.com:<port>
+			// REDIS: redis://*.cache.amazonaws.com:<port>
+			// KAFKA: *.kafka.<region>.amazonaws.com:<port>
+			// ES (ElasticSearch): *.es.amazonaws.com:<port>
+			runners := []*SearchRunner{
+				NewSearchRunner(".*\\.rds\\.amazonaws.com", "RDS"),
+				NewSearchRunner(".*\\.cache\\.amazonaws.com", "REDIS"),
+				NewSearchRunner(".*\\.kafka\\..*\\.amazonaws.com", "KAFKA"),
+				NewSearchRunner(".*\\.es\\.amazonaws.com", "ES"),
+				NewSearchRunner(".*s3\\.amazonaws.com", "S3"),
+				NewSearchRunner(".*s3-fips\\..*\\.amazonaws.com", "S3"),
+			}
+
+			for k, v := range searchResults {
+				found := false
+				for _, r := range runners {
+					found, err = r.SearchForResource(k, v)
+					if err != nil {
+						log.Print(err)
+						return
+					}
+					if found {
+						fmt.Printf("[%s] %s %v\n", r.ResourceKind, k, v)
+						break
+					}
+				}
+				if !found {
+					fmt.Printf("[**********UNKOWN*********] %s %v\n", k, v)
+				}
+			}
+
+			if len(graphOptions) > 0 {
+				for _, r := range runners {
+					err = reporting.Discover(graphOptions, r.SearchResults, r.ResourceKind)
+					if err != nil {
+						log.Print(err)
+						return
+					}
+				}
+			}
+
+		} else {
+			searchResults, err := r.SearchForTokens(args, dir, stage, env, app)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			for k, v := range searchResults {
+				fmt.Printf("%s %v\n", k, v)
+			}
+
+			if len(graphOptions) > 0 {
+				err = reporting.Discover(graphOptions, searchResults, "")
+				if err != nil {
+					log.Print(err)
+					return
+				}
 			}
 		}
 	},
@@ -82,12 +186,30 @@ in it in YAML format.`,
 // DatabaseClaimReconciler reconciles a DatabaseClaim object
 type SearchRunner struct {
 	SearchResults map[string][]string
+	SearchPattern string // regex
+	ResourceKind  string
 }
 
-func NewSearchRunner() *SearchRunner {
+func NewSearchRunner(pattern string, kind string) *SearchRunner {
 	return &SearchRunner{
 		SearchResults: map[string][]string{},
+		SearchPattern: pattern,
+		ResourceKind:  kind,
 	}
+}
+
+func (r *SearchRunner) SearchForResource(k string, v []string) (bool, error) {
+	found, err := regexp.MatchString(r.SearchPattern, k)
+	if err != nil {
+		log.Print(err)
+		return false, err
+	}
+
+	if found {
+		r.SearchResults[k] = v
+	}
+
+	return found, nil
 }
 
 func (r *SearchRunner) SearchForTokens(tokens []string, dir, stage, env, app string) (map[string][]string, error) {
@@ -126,7 +248,7 @@ func init() {
 	addSearch.Flags().StringP("env", "e", "", "search environment")
 	addSearch.Flags().StringP("app", "a", "", "search application")
 	addSearch.Flags().StringP("graphdb", "g", "", "use graph database")
-	//addSearch.Flags().StringP("s3", "s3", "", "search for s3 buckets")
+	addSearch.Flags().StringP("aws", "", "", "search for aws resources")
 }
 
 func (r *SearchRunner) SearchEnv(dir string, stage string, env string, app string, args []string) {
@@ -195,6 +317,9 @@ func (r *SearchRunner) SearchManifest(dir string, stage string, env string, app 
 			}
 
 			for _, m := range *out {
+				if stage == "dev" && env == "env-4" && app == "identity" {
+					fmt.Printf("****** %v\n", m)
+				}
 				r.recurseSearch(m, stage, env, a.Name(), args)
 			}
 		}
@@ -212,7 +337,7 @@ func (r *SearchRunner) recurseSearch(m interface{}, stage string, env string, ap
 
 	case reflect.Slice:
 		for i := 0; i < reflectM.Len(); i++ {
-			r.recurseSearch(reflectM.Index(i), stage, env, app, args)
+			r.recurseSearch(reflectM.Index(i).Interface(), stage, env, app, args)
 		}
 
 	case reflect.Map:
@@ -227,6 +352,13 @@ func (r *SearchRunner) recurseSearch(m interface{}, stage string, env string, ap
 				r.recurseSearch(strct.Interface(), stage, env, app, args)
 			}
 		}
+	case reflect.Struct:
+		fmt.Printf("****** We should not be getting structs with decoder %v\n", m)
+		//for i := 0; i < reflectM.NumField(); i++ {
+		//	if reflectM.Field(i).CanInterface() {
+		//		r.recurseSearch(reflectM.Field(i).Interface(), stage, env, app, args)
+		//	}
+		//}
 	}
 }
 
