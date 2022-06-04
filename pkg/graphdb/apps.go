@@ -1,35 +1,33 @@
 package graphdb
 
 import (
-"fmt"
+	"fmt"
 
-"github.com/neo4j/neo4j-go-driver/v4/neo4j"
-
+	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
 )
 
-type App struct{
-	AppId string
-	Name string
-	Stage string
+type App struct {
+	AppId       string
+	Name        string
+	Stage       string
 	Environment string
-	ShortName string
+	ShortName   string
 }
 
 type AppService interface {
 	Save(app App) (App, error)
 	FindAll(page *Paging) ([]App, error)
 	FindOneByName(name string) (App, error)
+	QueryAppResources(stage, env, app string) (interface{}, error)
 }
 
 type neo4jAppService struct {
-	driver     neo4j.Driver
-	jwtSecret  string
-	saltRounds int
+	driver neo4j.Driver
 }
 
 func NewAppService(driver neo4j.Driver) AppService {
 	return &neo4jAppService{
-		driver:     driver,
+		driver: driver,
 	}
 }
 func resolveString(s interface{}) string {
@@ -53,13 +51,13 @@ func getApp(app map[string]interface{}) App {
 //
 func (as *neo4jAppService) Save(app App) (_ App, err error) {
 	retApp := App{}
-	
+
 	// Open a new Session
 	session := as.driver.NewSession(neo4j.SessionConfig{})
 	defer func() {
 		err = DeferredClose(session, err)
 	}()
-	
+
 	result, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 		result, err := tx.Run(`
 			CREATE (u:App {
@@ -71,15 +69,15 @@ func (as *neo4jAppService) Save(app App) (_ App, err error) {
 			})
 			RETURN u { .appId, .name } as u`,
 			map[string]interface{}{
-				"name":     app.Name,
-				"stage":     app.Stage,
-				"environment":     app.Environment,
-				"shortName":     app.ShortName,
+				"name":        app.Name,
+				"stage":       app.Stage,
+				"environment": app.Environment,
+				"shortName":   app.ShortName,
 			})
-		
+
 		// Extract safe properties from the user node (`u`) in the first row
 		record, err := result.Single()
-		
+
 		// Handle Unique constraint errors in the database
 		if neo4jError, ok := err.(*neo4j.Neo4jError); ok && neo4jError.Title() == "ConstraintValidationFailed" {
 			return nil, NewDomainError(
@@ -90,19 +88,19 @@ func (as *neo4jAppService) Save(app App) (_ App, err error) {
 				},
 			)
 		}
-		
+
 		// All other errors
 		if err != nil {
 			return nil, err
 		}
-		
+
 		app, _ := record.Get("u")
 		return app, nil
 	})
 	if err != nil {
 		return retApp, err
 	}
-	
+
 	retApp = getApp(result.(map[string]interface{}))
 	return retApp, nil
 }
@@ -114,15 +112,15 @@ func (as *neo4jAppService) Save(app App) (_ App, err error) {
 func (ms *neo4jAppService) FindAll(page *Paging) (_ []App, err error) {
 	// Open a new Session
 	session := ms.driver.NewSession(neo4j.SessionConfig{})
-	
+
 	// Close the session once this function has completed
 	defer func() {
 		err = DeferredClose(session, err)
 	}()
-	
+
 	// Execute a query in a new Read Transaction
 	results, err := session.ReadTransaction(func(tx neo4j.Transaction) (interface{}, error) {
-		
+
 		// Retrieve a list of resources
 		sort := page.Sort()
 		result, err := tx.Run(fmt.Sprintf(`
@@ -133,13 +131,13 @@ func (ms *neo4jAppService) FindAll(page *Paging) (_ []App, err error) {
 			SKIP $skip
 			LIMIT $limit
 		`, sort, page.Order()), map[string]interface{}{
-			"skip":      page.Skip(),
-			"limit":     page.Limit(),
+			"skip":  page.Skip(),
+			"limit": page.Limit(),
 		})
 		if err != nil {
 			return nil, err
 		}
-		
+
 		// Get a list of Resources from the Result
 		records, err := result.Collect()
 		if err != nil {
@@ -152,7 +150,7 @@ func (ms *neo4jAppService) FindAll(page *Paging) (_ []App, err error) {
 		}
 		return results, nil
 	})
-	
+
 	if err != nil {
 		return nil, err
 	}
@@ -168,7 +166,7 @@ func (as *neo4jAppService) FindOneByName(name string) (_ App, err error) {
 	defer func() {
 		err = DeferredClose(session, err)
 	}()
-	
+
 	// Find the App node within a Read Transaction
 	result, err := session.ReadTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 		result, err := tx.Run(`
@@ -179,7 +177,7 @@ func (as *neo4jAppService) FindOneByName(name string) (_ App, err error) {
 		if err != nil {
 			return nil, err
 		}
-		
+
 		record, err := result.Single()
 		if neo4jError, ok := err.(*neo4j.UsageError); ok && neo4jError.Message == "Result contains no more records" {
 			return nil, NewDomainError(
@@ -190,23 +188,69 @@ func (as *neo4jAppService) FindOneByName(name string) (_ App, err error) {
 				},
 			)
 		}
-		
+
 		user, _ := record.Get("u")
 		return user, nil
-		
+
 	})
-	
+
 	if err != nil {
 		return App{}, err
 	}
-	
+
 	appNode := result.(neo4j.Node)
 
 	return getApp(appNode.Props), nil
 }
 
+// QueryAppResources should find resources and relations for an App
+// depending on the stage and env parameters more than one application can
+// be returned to the caller in the collection result
+//
+func (as *neo4jAppService) QueryAppResources(stage, env, app string) (result interface{}, err error) {
+	// Open a new Session
+	session := as.driver.NewSession(neo4j.SessionConfig{})
+	defer func() {
+		err = DeferredClose(session, err)
+	}()
 
+	// Create Query pattern
+	stageMatch := ""
+	if len(stage) > 0 {
+		stageMatch = ", stage: $stage"
+	}
 
+	envMatch := ""
+	if len(env) > 0 {
+		envMatch = ", env: $env"
+	}
 
+	cypher := "MATCH (n:App {shortName: $shortName" + envMatch + stageMatch + "})-[r]->(m) RETURN n,r,m"
+	// Find the App node within a Read Transaction
+	result, err = session.ReadTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+		result, err := tx.Run(cypher,
+			map[string]interface{}{
+				"stage":     stage,
+				"env":       env,
+				"shortName": app,
+			})
+		if err != nil {
+			return nil, err
+		}
 
+		// Get a list of Resources from the Result
+		records, err := result.Collect()
+		if err != nil {
+			return nil, err
+		}
+		//var results []App
+		//for _, record := range records {
+		//	app, _ := record.Get("app")
+		//	results = append(results, getApp(app.(map[string]interface{})))
+		//}
+		//return results, nil
+		return records, nil
+	})
 
+	return result, nil
+}
