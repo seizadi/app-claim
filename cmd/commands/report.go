@@ -84,9 +84,10 @@ var addReport = &cobra.Command{
 				// Skip first line if we have header and ignore it
 				if ignoreHeader {
 					ignoreHeader = false
+					continue
 				}
 				values := strings.Split(fileScanner.Text(), ",")
-				if len(values) == 1 {
+				if len(values) > 0 {
 					apps = append(apps, values[0])
 				}
 			}
@@ -109,6 +110,11 @@ var addReport = &cobra.Command{
 			fmt.Println("No applications specified either supply from command line or file")
 			return
 		}
+		// Print the report in comma comma-separated values for CSV format
+		// TODO - Print everything from here...
+		// Print header here and the invidual apps are printed from query
+		header := []string{"stage", "environment", "app", "kind", "resource"}
+		fmt.Println(strings.Join(header, ","))
 		err = reporting.Report(graphOptions, stage, env, apps)
 		if err != nil {
 			fmt.Println(err)
@@ -119,7 +125,6 @@ var addReport = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(addReport)
-	addReport.Flags().StringP("dir", "d", "", "todo remove directory")
 	addReport.Flags().StringP("stage", "s", "", "search stage")
 	addReport.Flags().StringP("env", "e", "", "search environment")
 	addReport.Flags().StringP("app", "a", "", "search application")

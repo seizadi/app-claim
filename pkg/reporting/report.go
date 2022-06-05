@@ -1,8 +1,8 @@
 package reporting
 
 import (
-	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/seizadi/app-claim/pkg/graphdb"
 )
@@ -16,21 +16,18 @@ func Report(graphOptions string, stage string, env string, apps []string) error 
 
 	appSvc := graphdb.NewAppService(driver)
 
+	// Print the report in comma comma-separated values for CSV format
 	for _, app := range apps {
 		// For app in the list query database and return result
-		r, err := appSvc.QueryAppResources(stage, env, app)
-		// Check for record not being found
-		if domainError, ok := err.(*graphdb.DomainError); ok && domainError.StatusCode() == graphdb.NotFound {
-			// application not found
-			msg := fmt.Sprintf("application %s not found.", app)
-			return errors.New(msg)
-		}
+		records, err := appSvc.QueryAppResources(stage, env, app)
 
 		if err != nil {
 			return err
 		}
 
-		fmt.Printf("%v", r)
+		for _, r := range records {
+			fmt.Println(strings.Join(r, ","))
+		}
 	}
 	return nil
 }

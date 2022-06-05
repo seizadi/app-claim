@@ -18,7 +18,7 @@ type AppService interface {
 	Save(app App) (App, error)
 	FindAll(page *Paging) ([]App, error)
 	FindOneByName(name string) (App, error)
-	QueryAppResources(stage, env, app string) (interface{}, error)
+	QueryAppResources(stage, env, app string) ([][]string, error)
 }
 
 type neo4jAppService struct {
@@ -44,6 +44,10 @@ func getApp(app map[string]interface{}) App {
 	retApp.Environment = resolveString(app["environment"])
 	retApp.ShortName = resolveString(app["shortName"])
 	return retApp
+}
+
+func getAppShortName(app map[string]interface{}) string {
+	return resolveString(app["shortName"])
 }
 
 // Save should create a new App node in the database with the name
@@ -207,7 +211,7 @@ func (as *neo4jAppService) FindOneByName(name string) (_ App, err error) {
 // depending on the stage and env parameters more than one application can
 // be returned to the caller in the collection result
 //
-func (as *neo4jAppService) QueryAppResources(stage, env, app string) (result interface{}, err error) {
+func (as *neo4jAppService) QueryAppResources(stage, env, app string) (result [][]string, err error) {
 	// Open a new Session
 	session := as.driver.NewSession(neo4j.SessionConfig{})
 	defer func() {
@@ -222,17 +226,17 @@ func (as *neo4jAppService) QueryAppResources(stage, env, app string) (result int
 
 	envMatch := ""
 	if len(env) > 0 {
-		envMatch = ", env: $env"
+		envMatch = ", environment: $environment"
 	}
 
-	cypher := "MATCH (n:App {shortName: $shortName" + envMatch + stageMatch + "})-[r]->(m) RETURN n,r,m"
+	cypher := "MATCH (app:App {shortName: $shortName" + envMatch + stageMatch + "})-[r]->(resource) RETURN app,r,resource"
 	// Find the App node within a Read Transaction
-	result, err = session.ReadTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+	records, err := session.ReadTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 		result, err := tx.Run(cypher,
 			map[string]interface{}{
-				"stage":     stage,
-				"env":       env,
-				"shortName": app,
+				"stage":       stage,
+				"environment": env,
+				"shortName":   app,
 			})
 		if err != nil {
 			return nil, err
@@ -243,14 +247,55 @@ func (as *neo4jAppService) QueryAppResources(stage, env, app string) (result int
 		if err != nil {
 			return nil, err
 		}
-		//var results []App
-		//for _, record := range records {
-		//	app, _ := record.Get("app")
-		//	results = append(results, getApp(app.(map[string]interface{})))
+		//var results []map[string]interface{}
+		//keys := []string{
+		//	"app",
+		//	"relation",
+		//	"resource",
 		//}
-		//return results, nil
-		return records, nil
+		// The returned result is pretty detailed (App)-[ACCESS]->(Resource)
+		// We trim it down for now for the report we want but can always add
+		// more detail if desired.
+		//for _, record := range records {
+		//	values := map[string]interface{}{}
+		//	for i, v := range record.Values {
+		//		values[keys[i]] = v
+		//	}
+		//	results = append(results, values)
+		//}
+
+		report := [][]string{}
+		for _, record := range records {
+			appRes := App{}
+			if a, ok := record.Get("app"); ok {
+				if n, ok := a.(neo4j.Node); ok {
+					appRes = getApp(n.Props)
+				}
+			}
+			resourceName := ""
+			resourceKind := ""
+			if res, ok := record.Get("resource"); ok {
+				if n, ok := res.(neo4j.Node); ok {
+					resourceKind = getResourceKind(n.Props)
+					resourceName = getResourceName(n.Props)
+				}
+			}
+			e := []string{
+				appRes.Stage,
+				appRes.Environment,
+				appRes.ShortName,
+				resourceKind,
+				resourceName,
+			}
+			report = append(report, e)
+		}
+
+		return report, nil
 	})
 
-	return result, nil
+	if result, ok := records.([][]string); ok {
+		return result, nil
+	}
+
+	return [][]string{}, nil
 }

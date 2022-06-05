@@ -19,6 +19,14 @@ type neo4jResourceService struct {
 	driver neo4j.Driver
 }
 
+func getResourceName(app map[string]interface{}) string {
+	return resolveString(app["name"])
+}
+
+func getResourceKind(app map[string]interface{}) string {
+	return resolveString(app["kind"])
+}
+
 func NewResourceService(driver neo4j.Driver) ResourceService {
 	return &neo4jResourceService{driver: driver}
 }
