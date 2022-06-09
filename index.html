@@ -1,0 +1,679 @@
+
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Soheil Eizadi" name="author"/>
+<link href="https://seizadi.github.io/app-claim/" rel="canonical"/>
+<link href="assets/images/favicon.png" rel="icon"/>
+<meta content="mkdocs-1.3.0, mkdocs-material-8.3.3" name="generator"/>
+<title>app-claim</title>
+<link href="assets/stylesheets/main.4a0965b7.min.css" rel="stylesheet"/>
+<link href="assets/stylesheets/palette.cbb835fc.min.css" rel="stylesheet"/>
+<meta content="#2094f3" name="theme-color"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:300,300i,400,400i,700,700i%7CIBM+Plex+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"IBM Plex Sans";--md-code-font:"IBM Plex Mono"}</style>
+<script>__md_scope=new URL(".",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+</head>
+<body data-md-color-accent="blue" data-md-color-primary="blue" data-md-color-scheme="default" dir="ltr">
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#application-claim-docs">
+          Skip to content
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header" data-md-component="header">
+<nav aria-label="Header" class="md-header__inner md-grid">
+<a aria-label="app-claim" class="md-header__button md-logo" data-md-component="logo" href="." title="app-claim">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"></path></svg>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            app-claim
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              Home
+            
+          </span>
+</div>
+</div>
+</div>
+<label class="md-header__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Search" required="" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"></path></svg>
+</label>
+<nav aria-label="Search" class="md-search__options">
+<button aria-label="Clear" class="md-search__icon md-icon" tabindex="-1" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"></path></svg>
+</button>
+</nav>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="md-header__source">
+<a class="md-source" data-md-component="source" href="https://github.com/seizadi/app-claim" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"></path></svg>
+</div>
+<div class="md-source__repository">
+    app-claim
+  </div>
+</a>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="app-claim" class="md-nav__button md-logo" data-md-component="logo" href="." title="app-claim">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"></path></svg>
+</a>
+    app-claim
+  </label>
+<div class="md-nav__source">
+<a class="md-source" data-md-component="source" href="https://github.com/seizadi/app-claim" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"></path></svg>
+</div>
+<div class="md-source__repository">
+    app-claim
+  </div>
+</a>
+</div>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" data-md-toggle="toc" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+          Home
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href=".">
+        Home
+      </a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#introduction">
+    Introduction
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#operators-versus-declarative-configuration">
+    Operators versus Declarative Configuration
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#additional-patterns">
+    Additional Patterns
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#workflow-approach">
+    Workflow Approach
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#custom-approach">
+    Custom Approach
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#application-use-cases">
+    Application Use Cases
+  </a>
+<nav aria-label="Application Use Cases" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#container-args">
+    Container Args
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#introduction">
+    Introduction
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#operators-versus-declarative-configuration">
+    Operators versus Declarative Configuration
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#additional-patterns">
+    Additional Patterns
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#workflow-approach">
+    Workflow Approach
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#custom-approach">
+    Custom Approach
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#application-use-cases">
+    Application Use Cases
+  </a>
+<nav aria-label="Application Use Cases" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#container-args">
+    Container Args
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<a class="md-content__button md-icon" href="https://github.com/seizadi/app-claim/edit/master/docs/index.md" title="Edit this page">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"></path></svg>
+</a>
+<h1 id="application-claim-docs">Application Claim Docs<a class="headerlink" href="#application-claim-docs" title="Permanent link">¶</a></h1>
+<h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">¶</a></h2>
+<p>The motiviation for this project was to research application claim pattern.
+This pattern allows applciations to have a ligth weight claim that is used
+create a much more detailed resource. The deployment environment that is targeted
+is Kubernetes and the resources that are targeted by these claims are infrastructure
+resources like AWS RDS, S3 and other cloud provider services. The claim pattern
+shields the applications from knowing anything about the cloud provider concerns
+that are typically managed by a differents team that deploys the applciations
+and manages cloud infrastructure.</p>
+<p>There are examples of this pattern for example 
+<a href="https://github.com/crossplane/crossplane/blob/master/design/one-pager-composition-revisions.md">crossplane composition</a>
+aims to support this claim pattern. Another example of this pattern is the
+<a href="https://infobloxopen.github.io/db-controller">db-controller</a> and its
+<a href="https://infobloxopen.github.io/db-controller/#databaseclaim-custom-resource">DatabaseClaim</a>. 
+The former crossplane claim pattern is very general purpose and more passive while
+the db-controller claim is very specialized for database application and db-controller 
+takes a more active role in managing the resource and provides database proxy and 
+secret key rotation services.</p>
+<p>In this project we will research some other patterns, the goal is to find a common
+pattern(s) for application deployment.</p>
+<h2 id="operators-versus-declarative-configuration">Operators versus Declarative Configuration<a class="headerlink" href="#operators-versus-declarative-configuration" title="Permanent link">¶</a></h2>
+<p>In the following analysis we will consider declarative configuration of infrastructure from
+claims. This type of deployment might not fit some (or many) use cases where resources are shared 
+and there is a need for reclaim policies enforced by an Operator, or there is specialized
+processing of the infrastructure resources required e.g. health monitoring or backup.
+It is intersting that 
+<a href="https://github.com/crossplane/crossplane-runtime/issues/179#issuecomment-671686000">crossplane composition reclaim lifecycle was backed out recently</a>.
+We will examine this decision once we have found all our use cases that will require
+the claim pattern.</p>
+<p>In this project we will define CRDs for the claims that we will use in the declarative
+configuration. This will allow us to load them on the cluster and if necessary process them
+using an Operator. We will seed the project with the kubebuilder db-controller project
+scaffolding so we can use kubebuilder to build CRDs quickly but we will not implement any
+runtime logic in this proejct.</p>
+<p>The db-controller was setup for a single resource and we enable the project for
+multigroup layout:
+<div class="highlight"><pre><span></span><code>kubebuilder edit --multigroup <span class="nb">true</span>
+</code></pre></div>
+There is work to refactor the definition from /api to /apis directory but since this is PoC,
+I will not make these changes here.</p>
+<p>We want the claim data model to follow the following schema:</p>
+<div class="mermaid">%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#fffcbb', 'lineColor': '#ff0000', 'primaryBorderColor': '#ff0000'}}}%%
+graph LR
+
+A[[claims.atlas.infoblox.com]] --&gt; B((ObjectStoreClaim))
+A --&gt; C((DataBaseClaim))
+</div>
+<p>We could have finer grained grouping:
+<div class="mermaid">%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#fffcbb', 'lineColor': '#ff0000', 'primaryBorderColor': '#ff0000'}}}%%
+graph LR
+
+A[[claims.atlas.infoblox.com]] --&gt; B[[persistence.claims.atlas.infoblox.com]]
+B --&gt; C((ObjectStoreClaim))
+B --&gt; D((DataBaseClaim))
+</div>
+For now we go with the coarse model, as most of the work is defining the leaf nodes.
+We can refactor to the finer grain model once we have a better idea of the different 
+claims needed for the applications.</p>
+<p>We start by creating a claim for ObjectStore which we would map to AWS S3 resource for example:
+<div class="highlight"><pre><span></span><code>kubebuilder create api --controller <span class="nb">false</span> --kind ObjectStoreClaim --version v1 --group objectstore.claims.atlas.infoblox.com
+make update_crds
+</code></pre></div></p>
+<h2 id="additional-patterns">Additional Patterns<a class="headerlink" href="#additional-patterns" title="Permanent link">¶</a></h2>
+<p>Generally infrastructure resources are injected into applications using configmap or secrets.
+In addition to the pattern highlighted above we will look at two other patterns that build on
+the established configmap or secret pattern. One problem with these patterns is that the
+namespace and associated configmap or secret must be present for the application deployment
+to succeed as the dependency is not present in the helm chart that is resolved.</p>
+<p>The two approaches we will make is to:
+- Use a workflow engine to process application defintion e.g. helm chart and use the application claim to create the create the resource
+- Custom program that understands applications and the environment consumes application helm charts and emits resolved mainfest that coverts claims to resources</p>
+<p>In general this the state flow in handling all the applications, in both approaches:
+<div class="mermaid">%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#fffcbb', 'lineColor': '#ff0000', 'primaryBorderColor': '#ff0000'}}}%%
+stateDiagram-v2
+
+[*] --&gt; ProcessDC
+ProcessDC --&gt; ProcessNextApp
+ProcessNextApp --&gt; CheckNextApp
+state CheckNextApp &lt;<choice>&gt;
+CheckNextApp --&gt; ProcessApp: if NextApp != ""
+CheckNextApp --&gt; [*] : if NextApp == ""
+ProcessApp --&gt; FetchChart
+FetchChart --&gt; ExpandChart
+ExpandChart --&gt; Customize
+Customize --&gt; GitCheckIn
+GitCheckIn --&gt; ProcessNextApp
+</choice></div></p>
+<h2 id="workflow-approach">Workflow Approach<a class="headerlink" href="#workflow-approach" title="Permanent link">¶</a></h2>
+<p>In the workflow approach we would pick a solution that has a decralative workflow engine, two open source solutions
+are good examples:
+- <a href="https://kubevela.io/docs/platform-engineers/workflow/workflow">Kubevela</a>
+- <a href="https://argoproj.github.io/argo-workflows/">Argo Workflow</a></p>
+<p>The two workflows solutions have different trades offs, kubevela is more specialized to CI/CD delivery has
+native integration with helm and other tooling using its plugin architecture, while argo workflow is more
+generalized and flexible in building workflows. The kubevela schema defintion could be a benefit if its 
+fits your deployment model or problem as you have to define and model your configuration.</p>
+<h2 id="custom-approach">Custom Approach<a class="headerlink" href="#custom-approach" title="Permanent link">¶</a></h2>
+<p>In the custom approach we will build an application that understands the data model for our 
+deployment configuration repo (dc-repo), see this <a href="https://github.com/seizadi/dc-repo">example of dc-repo</a>.
+This custom solution can still use open source tooling like
+<a href="https://github.com/GoogleContainerTools/kpt">kpt</a> or <a href="https://cuelang.org/docs/about/">QUE</a> 
+for declartive defintion and processing of the helm chart and creating resource configuration.</p>
+<p>We could leverage <a href="https://seizadi.github.io/kubevela-poc/#que">QUE integration in kubevela</a> or
+<a href="https://cuelang.org/docs/integrations/k8s/">develope our own custom integration</a>.</p>
+<p>The <a href="https://googlecontainertools.github.io/kpt/installation/">kpt book</a>and 
+<a href="https://github.com/seizadi/kpt-poc">poc</a> are good resources. We will focus on
+<a href="https://googlecontainertools.github.io/kpt/guides/ecosystem/helm/">kpt helm support</a> as this
+will be the source of our application defintion.</p>
+<p>I will focus on kpt and how it can be integrated, as I feel that the QUE language and 
+integration in kubevela is better understood at this time.</p>
+<p>The kpt tool needs to have a resolved manifest for it to operate.
+We can step through the test CMDB repo, note with CMDB when built for local
+testing that postgres local server is run with the deployment, when run in the
+cloud it is run with a claim. To enable this we set
+postgresql.enabled to false:
+<div class="highlight"><pre><span></span><code>mkdir deploy
+<span class="nb">cd</span> tmp
+git clone git@github.com:seizadi/cmdb.git
+mkdir build
+<span class="nb">cd</span> build
+helm template --set postgresql.enabled<span class="o">=</span><span class="nb">false</span> -n cmdb ../cmdb/repo/cmdb/. --output-dir .
+</code></pre></div></p>
+<p>At this point this is what our directory structure would look like:
+<div class="highlight"><pre><span></span><code>❯ tree cmdb
+cmdb
+└── templates
+    ├── configmap.yaml
+    ├── deployment.yaml
+    ├── ingress.yaml
+    ├── migrations.yaml
+    ├── ns.yaml
+    ├── postgres-claim.yaml
+    ├── service.yaml
+    └── serviceaccount.yaml
+</code></pre></div>
+We are really intersted in the claim in postgres-claim.yaml:
+<div class="highlight"><pre><span></span><code><span class="nn">---</span><span class="w"></span>
+<span class="c1"># Source: cmdb/templates/postgres-claim.yaml</span><span class="w"></span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database.example.org/v1alpha1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PostgresInstance</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RELEASE-NAME-cmdb</span><span class="w"></span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cmdb</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">parameters</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">storageGB</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span><span class="w"></span>
+<span class="w">  </span><span class="nt">writeConnectionSecretToRef</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RELEASE-NAME-cmdb-postgres-con</span><span class="w"></span>
+</code></pre></div></p>
+<p>The goal now is to kpt to process this claim and convert it to a infrastructure claim.
+We will use the kpt function pattern to search and replace the claim above with an
+infrastructure defintion that looks like this:
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database.aws.crossplane.io/v1beta1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RDSInstance</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdspostgresql</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">forProvider</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">us-west-1</span><span class="w"></span>
+<span class="w">    </span><span class="nt">vpcSecurityGroupIDRefs</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">seizadi-bloxinabox-rds-sg</span><span class="w"></span>
+<span class="w">    </span><span class="nt">dbSubnetGroupNameRef</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">seizadi-bloxinabox-rds-subnetgroup</span><span class="w"></span>
+<span class="w">    </span><span class="nt">dbInstanceClass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;shape goes here&gt;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">masterUsername</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">masteruser</span><span class="w"></span>
+<span class="w">    </span><span class="nt">allocatedStorage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;minStorageGB goes here&gt;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">engine</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres</span><span class="w"></span>
+<span class="w">    </span><span class="nt">engineVersion</span><span class="p">:</span><span class="w"> </span><span class="s">"12.8"</span><span class="w"></span>
+<span class="w">    </span><span class="nt">skipFinalSnapshotBeforeDeletion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">    </span><span class="nt">publiclyAccessible</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># enableIAMDatabaseAuthentication: true</span><span class="w"></span>
+<span class="w">  </span><span class="nt">writeConnectionSecretToRef</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;claim namespace goes here&gt;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;writeConnectionSecretToRef goes here&gt;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">providerConfigRef</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span><span class="w"></span>
+</code></pre></div>
+The <a href="https://catalog.kpt.dev/">kpt function catalog</a> is a good place to look for
+features to build for our required mutations.</p>
+<p>We can do some processing of the helm chart as needed like mutating the namespace for the application
+or setting it release name:
+<div class="highlight"><pre><span></span><code>kpt fn <span class="nb">eval</span> --image gcr.io/kpt-fn/search-replace:v0.2.0 -- by-path<span class="o">=</span><span class="s1">'metadata.namespace'</span> put-value<span class="o">=</span><span class="s1">'cmdb'</span>
+kpt fn <span class="nb">eval</span> --image gcr.io/kpt-fn/search-replace:v0.2.0 -- by-path<span class="o">=</span><span class="s1">'metadata.name'</span> put-value<span class="o">=</span><span class="s1">'cmdb-dev-seizadi'</span>
+</code></pre></div>
+You should see changes like this:
+<div class="highlight"><pre><span></span><code>diff --git a/deploy/build/cmdb/templates/configmap.yaml b/deploy/build/cmdb/templates/configmap.yaml
+index 3ad3e33..813bf80 <span class="m">100644</span>
+--- a/deploy/build/cmdb/templates/configmap.yaml
++++ b/deploy/build/cmdb/templates/configmap.yaml
+@@ -3,7 +3,7 @@ apiVersion: v1
+ kind: ConfigMap
+ metadata:
+   name: RELEASE-NAME-cmdb
+-  namespace: default
++  namespace: cmdb
+</code></pre></div></p>
+<p>We try to do the claim mutation by using 
+<a href="https://catalog.kpt.dev/apply-replacements/v0.1/">apply-replacements function</a> which uses the 
+<a href="https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/replacements/">kustomize synthax</a>
+for replacements.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kpt.dev/v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Kptfile</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">claim</span><span class="w"></span>
+<span class="nt">pipeline</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">mutators</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gcr.io/kpt-fn/apply-replacements:unstable</span><span class="w"></span>
+<span class="w">      </span><span class="nt">configPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">replacements.yaml</span><span class="w"></span>
+</code></pre></div>
+<p>We will define a kpt file to detail the desired changes:
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kpt.dev/v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Kptfile</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">claim</span><span class="w"></span>
+<span class="nt">pipeline</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">mutators</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gcr.io/kpt-fn/apply-replacements:unstable</span><span class="w"></span>
+<span class="w">      </span><span class="nt">configPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">replacements.yaml</span><span class="w"></span>
+</code></pre></div></p>
+<p>Now we can process the claim:
+<div class="highlight"><pre><span></span><code>kpt fn render claim
+</code></pre></div>
+Now we can check what changed in the infrastructure defintion was updated:
+<div class="highlight"><pre><span></span><code>diff --git a/deploy/claim/infrastructure.yaml b/deploy/claim/infrastructure.yaml
+index e705744..ad2dce9 <span class="m">100644</span>
+--- a/deploy/claim/infrastructure.yaml
++++ b/deploy/claim/infrastructure.yaml
+@@ -10,16 +10,16 @@ spec:
+       - name: seizadi-bloxinabox-rds-sg
+     dbSubnetGroupNameRef:
+       name: seizadi-bloxinabox-rds-subnetgroup
+-    dbInstanceClass: &lt;shape goes here&gt;
++    dbInstanceClass: db.t2.small
+     masterUsername: masteruser
+-    allocatedStorage: &lt;minStorageGB goes here&gt;
++    allocatedStorage: <span class="m">20</span>
+     engine: postgres
+     engineVersion: <span class="s2">"12.8"</span>
+     skipFinalSnapshotBeforeDeletion: <span class="nb">true</span>
+     publiclyAccessible: <span class="nb">false</span>
+     <span class="c1"># enableIAMDatabaseAuthentication: true</span>
+   writeConnectionSecretToRef:
+-    namespace: &lt;claim namespace goes here&gt;
+-    name: &lt;writeConnectionSecretToRef goes here&gt;
++    namespace: cmdb
++    name: RELEASE-NAME-cmdb-postgres-con
+   providerConfigRef:
+     name: default
+</code></pre></div></p>
+<p>This shows simple mutations but there might be cases where you need to implement
+conditional logic or more complex mutations rather than replace/substitutions.
+For example see the more complex operations available to
+<a href="https://github.com/crossplane/crossplane/blob/master/design/design-doc-composition.md#transform-functions">crossplane compositions</a> to transform claims.</p>
+<p>In these cases in the case of kpt we have <a href="https://catalog.kpt.dev/starlark/v0.4/">starlark scripting</a>.
+<a href="https://docs.bazel.build/versions/main/skylark/language.html">starlark</a> 
+is is a dialect of Python. It is commonly used as a configuration language. 
+It is an untyped dynamic language with high-level data types, first-class functions with lexical scope, 
+and garbage collection. You can find the spec for the Starlark language 
+<a href="https://github.com/bazelbuild/starlark/blob/master/spec.md">here</a>. 
+You can also find its API reference <a href="https://docs.bazel.build/versions/main/skylark/lib/skylark-overview.html">here</a>.</p>
+<p>We will do a example of claim transformation using this method as well.</p>
+<p>POC USING STARLARK SCRIPT GOES HERE!</p>
+<h2 id="application-use-cases">Application Use Cases<a class="headerlink" href="#application-use-cases" title="Permanent link">¶</a></h2>
+<p>Lets look at some common use cases below</p>
+<h3 id="container-args">Container Args<a class="headerlink" href="#container-args" title="Permanent link">¶</a></h3>
+<p>In this use case you have something like this:
+<div class="highlight"><pre><span></span><code><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;some-container&gt;</span><span class="w"></span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">.....</span><span class="w"></span>
+<span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">args</span><span class="p p-Indicator">:</span><span class="w"></span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--s3-region=&lt;some region&gt;</span><span class="w"></span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--s3-bucket=&lt;some bucket&gt;</span><span class="w"></span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--s3-folder=&lt;some folder&gt;</span><span class="w"></span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">.....</span><span class="w"></span>
+</code></pre></div>
+There is also the associated secret and you can have this injected via Secrets, 
+use node IAM permission, kube2iam or IRSA.</p>
+<p>This declaration does not tell us if the S3 resource is shared by other applciations.
+If it is shared does not application need read only or read/write access to the resource.
+The application claim should also include these intents.</p>
+<p>The clients will use AWS SDK to access the object store, we have to test other cloud providers
+but they are suppose to be able to support the API calls with their own endpoints:
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="s">"github.com/aws/aws-sdk-go/aws"</span><span class="w"></span>
+<span class="w">    </span><span class="s">"github.com/aws/aws-sdk-go/aws/session"</span><span class="w"></span>
+<span class="w">    </span><span class="s">"github.com/aws/aws-sdk-go/service/s3"</span><span class="w"></span>
+<span class="w">    </span><span class="s">"github.com/aws/aws-sdk-go/service/s3/s3manager"</span><span class="w"></span>
+<span class="p">)</span><span class="w"></span>
+<span class="o">...</span><span class="w"></span>
+<span class="w">    </span><span class="nx">awsConfig</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">aws</span><span class="p">.</span><span class="nx">Config</span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nx">Region</span><span class="p">:</span><span class="w">     </span><span class="nx">aws</span><span class="p">.</span><span class="nx">String</span><span class="p">(</span><span class="nx">s3</span><span class="o">-</span><span class="nx">region</span><span class="p">),</span><span class="w"></span>
+<span class="w">    </span><span class="nx">HTTPClient</span><span class="p">:</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">http</span><span class="p">.</span><span class="nx">Client</span><span class="p">{</span><span class="nx">Timeout</span><span class="p">:</span><span class="w"> </span><span class="nx">defaultHTTPTimeout</span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nx">Endpoint</span><span class="p">:</span><span class="w">   </span><span class="o">&amp;</span><span class="nx">config</span><span class="p">.</span><span class="nx">Endpoint</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="nx">awsSession</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">session</span><span class="p">.</span><span class="nx">NewSession</span><span class="p">(</span><span class="nx">awsConfig</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="nx">svc</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">s3</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="nx">awsSession</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="nx">downloader</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">s3manager</span><span class="p">.</span><span class="nx">NewDownloader</span><span class="p">(</span><span class="nx">awsSession</span><span class="p">)</span><span class="w"></span>
+<span class="o">...</span><span class="w"></span>
+</code></pre></div>
+The ConfigMap pattern is another one found in applications, you can refrence
+the open source solution <a href="https://github.com/gravitational/teleport">Teleport</a>
+in how it pulls persistence information for its configuration:
+<div class="highlight"><pre><span></span><code><span class="nn">---</span><span class="w"></span>
+<span class="c1"># Source: teleport/templates/config.yaml</span><span class="w"></span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">teleport</span><span class="w"></span>
+<span class="nt">data</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">teleport.yaml</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
+<span class="w">    </span><span class="no">teleport:</span><span class="w"></span>
+<span class="w">      </span><span class="no">log:</span><span class="w"></span>
+<span class="w">        </span><span class="no">output: stderr</span><span class="w"></span>
+<span class="w">        </span><span class="no">severity: DEBUG</span><span class="w"></span>
+<span class="w">      </span><span class="no">data_dir: /var/lib/teleport</span><span class="w"></span>
+
+<span class="w">      </span><span class="no">auth_servers:</span><span class="w"></span>
+<span class="w">      </span><span class="no">- teleport.ib-system.svc.cluster.local:3025</span><span class="w"></span>
+<span class="w">      </span><span class="no">- auth-poseidon-preprod.csp.infoblox.com:3025</span><span class="w"></span>
+
+<span class="w">      </span><span class="no">storage:</span><span class="w"></span>
+<span class="w">        </span><span class="no">audit_events_uri:</span><span class="w"></span>
+<span class="w">        </span><span class="no">- "dynamodb://&lt;some-dynamodb&gt;"</span><span class="w"></span>
+<span class="w">        </span><span class="no">audit_sessions_uri: "s3://&lt;some-bucket&gt;"</span><span class="w"></span>
+</code></pre></div></p>
+<p>Another example similarly for configuration of 
+<a href="https://github.com/fossas">FOSSA</a>
+using ConfigMap:
+<div class="highlight"><pre><span></span><code><span class="nn">---</span><span class="w"></span>
+<span class="c1"># Source: fossa-core/templates/config/config-configmap.yaml</span><span class="w"></span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fossa-config</span><span class="w"></span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fossa</span><span class="w"></span>
+<span class="nt">data</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">config.json</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|-</span><span class="w"></span>
+<span class="w">    </span><span class="no">{</span><span class="w"></span>
+<span class="w">      </span><span class="no">"db": {</span><span class="w"></span>
+<span class="w">        </span><span class="no">"port": 5432,</span><span class="w"></span>
+<span class="w">        </span><span class="no">"username": "root",</span><span class="w"></span>
+<span class="w">        </span><span class="no">"database": "fossa",</span><span class="w"></span>
+<span class="w">        </span><span class="no">"host": "&lt;some aws rds host&gt;",</span><span class="w"></span>
+<span class="w">        </span><span class="no">"pool": {</span><span class="w"></span>
+<span class="w">          </span><span class="no">"maxConnections": 5,</span><span class="w"></span>
+<span class="w">          </span><span class="no">"minConnections": 1,</span><span class="w"></span>
+<span class="w">          </span><span class="no">"maxIdleTime": 60000</span><span class="w"></span>
+<span class="w">        </span><span class="no">}</span><span class="w"></span>
+<span class="w">      </span><span class="no">},</span><span class="w"></span>
+<span class="w">      </span><span class="no">"cache": {</span><span class="w"></span>
+<span class="w">        </span><span class="no">"package": {</span><span class="w"></span>
+<span class="w">          </span><span class="no">"engine": "s3",</span><span class="w"></span>
+<span class="w">          </span><span class="no">"store_private": true,</span><span class="w"></span>
+<span class="w">          </span><span class="no">"bucket": "&lt;some-bucket&gt;",</span><span class="w"></span>
+<span class="w">          </span><span class="no">"s3Options": {</span><span class="w"></span>
+<span class="w">            </span><span class="no">"endpoint": "s3.amazonaws.com"</span><span class="w"></span>
+<span class="w">          </span><span class="no">}</span><span class="w"></span>
+<span class="w">        </span><span class="no">}</span><span class="w"></span>
+<span class="w">      </span><span class="no">},</span><span class="w"></span>
+</code></pre></div>
+In these cases you need to have a declarative defintion of the signature for the
+persistence claims.</p>
+<p>There is a CLI tool to help research 
+<a href="">dc-repo</a> configuration.</p>
+<p>Local configuration
+<div class="highlight"><pre><span></span><code>make build
+./bin/claims --help
+</code></pre></div></p>
+<p>Docker run
+<div class="highlight"><pre><span></span><code>docker run ghcr.io/seizadi/claims --help
+</code></pre></div></p>
+<p>You can run it like this:
+<div class="highlight"><pre><span></span><code>claims search --dir &lt;path to k8 manifests&gt; --stage dev --env env-4 --app some-app s3 rds amazonaws.com
+</code></pre></div></p>
+<p>Here is a sample, showing how you can use the tool to determine that a claim for a
+resource is shared by two different environments:
+<div class="highlight"><pre><span></span><code>❯ ./bin/claims search --dir /Users/seizadi/projects/src/github.com/seizadi/k8s.manifests some-resource.amazonaws.com
+some-resource.amazonaws.com <span class="o">[</span>dev/env-4/some-app integration/env-2/another-app<span class="o">]</span>
+</code></pre></div>
+Try to visualize this data using graph DB:
+<div class="highlight"><pre><span></span><code>docker run -p7474:7474 -p7687:7687 -e <span class="nv">NEO4J_AUTH</span><span class="o">=</span>neo4j/s3cr3t neo4j
+</code></pre></div></p>
+<p>A bit more advanced:
+<div class="highlight"><pre><span></span><code>docker run <span class="se">\</span>
+    --name testneo4j <span class="se">\</span>
+    -p7474:7474 -p7687:7687 <span class="se">\</span>
+    -d <span class="se">\</span>
+    -v <span class="nv">$HOME</span>/neo4j/data:/data <span class="se">\</span>
+    -v <span class="nv">$HOME</span>/neo4j/logs:/logs <span class="se">\</span>
+    -v <span class="nv">$HOME</span>/neo4j/import:/var/lib/neo4j/import <span class="se">\</span>
+    -v <span class="nv">$HOME</span>/neo4j/plugins:/plugins <span class="se">\</span>
+    --env <span class="nv">NEO4J_AUTH</span><span class="o">=</span>neo4j/s3cr3t <span class="se">\</span>
+    neo4j:latest
+</code></pre></div></p>
+<p>In case it is not clear why we are thinking about this as a graph
+problem. In particular for Neo4J, 
+we want to create a record, where each record will contain
+information on :App and :Resource nodes, and 
+the :ACCESS relationship. The :ACCESS relationship will
+have boolean .Props Read and Write to indicate access
+types. Both App and Resources
+would have name .Props. For Resources we would
+define .Props Type with values like (ObjectStore or Database). </p>
+<p>You can use this tool to populate the database and
+then using the graph query editor to visulaize the data
+<div class="highlight"><pre><span></span><code>match(n:App)-[r:ACCESS]-&gt;(m:Resource) return n,r,m
+</code></pre></div>
+Then to filter to only the dev stage:
+<div class="highlight"><pre><span></span><code>match(n:App)-[r:ACCESS]-&gt;(m:Resource) where n.stage = "dev" return n,r,m
+</code></pre></div></p>
+</article>
+</div>
+</div>
+</main>
+<footer class="md-footer">
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<script id="__config" type="application/json">{"base": ".", "features": ["navigation.instant", "navigation.expand"], "search": "assets/javascripts/workers/search.b028fd86.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+<script src="assets/javascripts/bundle.f758a944.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.0.1/mermaid.min.js"></script>
+<script>mermaid.initialize({});</script></body>
+</html>
