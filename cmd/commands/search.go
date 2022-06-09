@@ -18,6 +18,18 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func init() {
+	rootCmd.AddCommand(addSearch)
+	addSearch.Flags().StringP("dir", "d", "", "search directory")
+	addSearch.Flags().StringP("stage", "s", "", "search stage")
+	addSearch.Flags().StringP("env", "e", "", "search environment")
+	addSearch.Flags().StringP("app", "a", "", "search application")
+	addSearch.Flags().StringP("graphdb", "g", "", "use graph database")
+	addSearch.Flags().StringP("aws", "", "", "search for aws resources")
+	addSearch.Flags().StringP("appsfile", "", "", "FIXME -- REMOVE")
+	addSearch.Flags().BoolP("claims", "c", false, "search for claims")
+}
+
 // addSearch implements the search command
 var addSearch = &cobra.Command{
 	Use:   "search",
@@ -30,6 +42,9 @@ in it in YAML format.`,
 		dir, err := cmd.Flags().GetString("dir")
 		if err != nil {
 			fmt.Println(err)
+			return
+		} else if len(dir) == 0 {
+			fmt.Println("--dir argument must be specified with path to manifests")
 			return
 		}
 
@@ -66,13 +81,37 @@ in it in YAML format.`,
 			return
 		}
 
+		claims, err := cmd.Flags().GetBool("claims")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
 		// Search
 		// There are two types of search free form from list of args passed or AWS
 		// For AWS search we expect a file to passed as argument that contains the
 		// AWS S3 bucket names as search terms
 		r := NewSearchRunner("", "")
 
-		if len(awsOptions) > 0 {
+		if claims { // Claim Search
+			searchResults, err := r.SearchForClaims(dir, stage, env, app)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			for k, v := range searchResults {
+				fmt.Printf("%s %v\n", k, v)
+			}
+
+			if len(graphOptions) > 0 {
+				err = reporting.Discover(graphOptions, searchResults, "CLAIM")
+				if err != nil {
+					log.Print(err)
+					return
+				}
+			}
+		} else if len(awsOptions) > 0 { // AWS Search
 			// Read the file with AWS Buckets
 			readFile, err := os.Open(awsOptions)
 
@@ -146,9 +185,6 @@ in it in YAML format.`,
 						break
 					}
 				}
-				if !found {
-					fmt.Printf("[**********UNKOWN*********] %s %v\n", k, v)
-				}
 			}
 
 			if len(graphOptions) > 0 {
@@ -161,7 +197,7 @@ in it in YAML format.`,
 				}
 			}
 
-		} else {
+		} else { // General Token Search
 			searchResults, err := r.SearchForTokens(args, dir, stage, env, app)
 			if err != nil {
 				fmt.Println(err)
@@ -188,6 +224,7 @@ type SearchRunner struct {
 	SearchResults map[string][]string
 	SearchPattern string // regex
 	ResourceKind  string
+	SearchClaims  bool
 }
 
 func NewSearchRunner(pattern string, kind string) *SearchRunner {
@@ -210,6 +247,12 @@ func (r *SearchRunner) SearchForResource(k string, v []string) (bool, error) {
 	}
 
 	return found, nil
+}
+
+func (r *SearchRunner) SearchForClaims(dir, stage, env, app string) (map[string][]string, error) {
+	r.SearchClaims = true
+	tokens := []string{"DatabaseClaim"}
+	return r.SearchForTokens(tokens, dir, stage, env, app)
 }
 
 func (r *SearchRunner) SearchForTokens(tokens []string, dir, stage, env, app string) (map[string][]string, error) {
@@ -239,16 +282,6 @@ func (r *SearchRunner) SearchForTokens(tokens []string, dir, stage, env, app str
 	}
 
 	return r.SearchResults, nil
-}
-
-func init() {
-	rootCmd.AddCommand(addSearch)
-	addSearch.Flags().StringP("dir", "d", "", "search directory")
-	addSearch.Flags().StringP("stage", "s", "", "search stage")
-	addSearch.Flags().StringP("env", "e", "", "search environment")
-	addSearch.Flags().StringP("app", "a", "", "search application")
-	addSearch.Flags().StringP("graphdb", "g", "", "use graph database")
-	addSearch.Flags().StringP("aws", "", "", "search for aws resources")
 }
 
 func (r *SearchRunner) SearchEnv(dir string, stage string, env string, app string, args []string) {
@@ -317,10 +350,13 @@ func (r *SearchRunner) SearchManifest(dir string, stage string, env string, app 
 			}
 
 			for _, m := range *out {
-				if stage == "dev" && env == "env-4" && app == "identity" {
-					fmt.Printf("****** %v\n", m)
+				if r.SearchClaims {
+					if k, ok := m["kind"].(string); ok {
+						r.SearchMatch(k, stage, env, a.Name(), args)
+					}
+				} else {
+					r.recurseSearch(m, stage, env, a.Name(), args)
 				}
-				r.recurseSearch(m, stage, env, a.Name(), args)
 			}
 		}
 	}
@@ -364,7 +400,7 @@ func (r *SearchRunner) recurseSearch(m interface{}, stage string, env string, ap
 
 func (r *SearchRunner) SearchMatch(s string, stage string, env string, app string, args []string) {
 	for _, a := range args {
-		if strings.Contains(strings.ToLower(s), a) {
+		if strings.Contains(strings.ToLower(s), strings.ToLower(a)) {
 			if len(s) < 128 {
 				// fmt.Printf("%s/%s/%s %s %s\n", stage, env, app, a, s)
 				tag := fmt.Sprintf("%s/%s/%s", stage, env, app)
